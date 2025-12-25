@@ -18,7 +18,9 @@ public class ApplicationWebController {
 
     @ModelAttribute
     public void addCommonAttributes(Model model) {
-        model.addAttribute("applications", applicationRepository.findAll());
+        // Загружаем только последние 20 заявок для сайдбара
+        List<Application> recentApplications = applicationRepository.findRecentApplications(20);
+        model.addAttribute("recentApplications", recentApplications);
         model.addAttribute("today", LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
     }
 
@@ -108,5 +110,31 @@ public class ApplicationWebController {
 
         model.addAttribute("application", new Application());
         return "applications";
+    }
+
+    // Новый метод для тестирования - добавление тестовых данных
+    @GetMapping("/add-test-data")
+    public String addTestData() {
+        try {
+            // Создаем несколько тестовых заявок
+            for (int i = 1; i <= 5; i++) {
+                Application app = new Application();
+                app.setApplicationNumber("24-00" + i + "00");
+                app.setEngineer("Инженер " + i);
+                app.setGsmLevel("-75 dB");
+                app.setInternetLevel("Хороший");
+                app.setMpkInstalled(true);
+                app.setHighCeiling(i % 2 == 0);
+                app.setResolution(i % 2 == 0);
+                app.setInstallationDate(LocalDate.now().minusDays(i).format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+                app.setInspector("Проверяющий " + i);
+                app.setComments("Тестовый комментарий " + i);
+
+                applicationRepository.save(app);
+            }
+            return "redirect:/applications?success=Тестовые данные добавлены";
+        } catch (Exception e) {
+            return "redirect:/applications?error=" + e.getMessage();
+        }
     }
 }

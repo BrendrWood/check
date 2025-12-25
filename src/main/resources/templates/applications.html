@@ -181,12 +181,19 @@
                     </div>
 
                     <!-- Комментарии -->
-                    <div class="mb-3">
+                    <div class="mb-2">
                         <label class="form-label">Комментарии</label>
                         <textarea th:field="*{comments}" class="form-control" rows="4" maxlength="2000"
                                   id="commentsField"
                                   placeholder="Комментарии добавляются через запятую. Пример: нет фото объекта, нет формы 002">
                         </textarea>
+                    </div>
+
+                    <!-- Кнопка "Копировать комментарии" -->
+                    <div class="mb-3">
+                        <button type="button" class="btn btn-success w-100" id="copyCommentsBtn" onclick="copyCommentsToClipboard()">
+                            <i class="bi bi-clipboard-check"></i> Копировать комментарии в буфер обмена
+                        </button>
                     </div>
 
                     <!-- Резолюция -->
@@ -202,13 +209,6 @@
                                 <label class="resolution-label" for="resolutionNok">NOK</label>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Кнопка "Копировать комментарии" -->
-                    <div class="mb-3">
-                        <button type="button" class="btn btn-success w-100" id="copyCommentsBtn" onclick="copyCommentsToClipboard()">
-                            <i class="bi bi-clipboard-check"></i> Копировать комментарии в буфер обмена
-                        </button>
                     </div>
 
                     <!-- Кнопки -->
@@ -228,9 +228,23 @@
         <div class="col-lg-4 col-md-5">
             <div class="sidebar">
                 <h5 class="mb-2" style="font-size: 1.1rem;">
-                    <i class="bi bi-list-check"></i> Заявки
-                    <span class="badge bg-secondary" id="applicationsCount" th:text="${applications.size()}"></span>
+                    <i class="bi bi-list-check"></i> Последние заявки
+                    <span class="badge bg-secondary" id="applicationsCount">0</span>
                 </h5>
+
+                <!-- Управление заявками -->
+                <div class="mb-3">
+                    <h6 style="font-size: 0.95rem;">Управление заявками</h6>
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-outline-info btn-sm" id="openAllApplicationsBtn">
+                            <i class="bi bi-table"></i> Таблица всех заявок
+                        </button>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="autoRefreshSwitch">
+                            <label class="form-check-label small" for="autoRefreshSwitch">Автообновление</label>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Экспорт -->
                 <div class="mb-3">
@@ -268,45 +282,13 @@
                     </div>
                 </div>
 
-                <!-- Список заявок -->
+                <!-- Список последних заявок -->
                 <div class="applications-list-container" id="applicationsList">
-                    <div th:each="app : ${applications}">
-                        <div class="application-item clickable"
-                             th:classappend="${app.resolution} ? 'application-ok' : 'application-nok'"
-                             th:data-number="${app.applicationNumber}"
-                             onclick="loadApplication(this)">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div style="line-height: 1.2;">
-                                    <div>
-                                        <strong class="app-number" th:text="${app.applicationNumber}"></strong>
-                                        <span class="text-muted ms-2" th:text="${app.engineer}" style="font-size: 0.85em;"></span>
-                                    </div>
-                                    <div class="small text-muted" th:text="${app.installationDate}"></div>
-                                </div>
-                                <div class="d-flex align-items-center gap-1">
-                                    <span th:text="${app.resolution} ? 'OK' : 'NOK'"
-                                          th:classappend="${app.resolution} ? 'text-success' : 'text-danger'"
-                                          class="badge">
-                                    </span>
-                                    <form th:action="@{/applications/delete/{id}(id=${app.id})}"
-                                          method="post"
-                                          style="display: inline;"
-                                          onsubmit="return confirm('Удалить заявку?')">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger ms-1"
-                                                onclick="event.stopPropagation()">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
+                    <div class="text-center text-muted py-3">
+                        <div class="spinner-border spinner-border-sm text-primary" role="status">
+                            <span class="visually-hidden">Загрузка...</span>
                         </div>
-                    </div>
-                    <div th:if="${applications.isEmpty()}" class="text-center text-muted py-3">
-                        <i class="bi bi-inbox" style="font-size: 1.5rem;"></i>
-                        <p class="mt-1">Нет заявок</p>
-                        <a href="/add-test-data" class="btn btn-sm btn-primary mt-1">
-                            <i class="bi bi-plus-circle"></i> Добавить тестовые данные
-                        </a>
+                        <p class="mt-2">Загрузка заявок...</p>
                     </div>
                 </div>
             </div>
@@ -381,6 +363,76 @@
                         </button>
                         <button type="button" class="btn btn-primary" onclick="addSelectedIssuesToComments()">
                             <i class="bi bi-check-circle"></i> Добавить выбранные
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для таблицы всех заявок -->
+<div class="modal fade" id="allApplicationsModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-table me-2"></i>Все заявки (полная таблица)
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Улучшенная панель управления -->
+                <div class="search-controls">
+                    <div class="input-group" style="flex-grow: 1;">
+                        <input type="text" class="form-control" id="searchAllTable"
+                               placeholder="Поиск по номеру, инженеру, комментариям...">
+                        <button class="btn btn-outline-success" type="button" onclick="searchInAllTable()">
+                            <i class="bi bi-search"></i> Поиск
+                        </button>
+                        <button class="btn btn-outline-secondary" type="button" onclick="clearSearchResults()"
+                                title="Очистить поиск">
+                            <i class="bi bi-x-circle"></i>
+                        </button>
+                    </div>
+                    <div class="input-group" style="width: 200px;">
+                        <input type="date" class="form-control" id="dateFilter">
+                        <button class="btn btn-outline-primary" type="button" onclick="filterByDate()">
+                            <i class="bi bi-filter"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Статистика -->
+                <div id="allTableStats" class="alert alert-info py-2 mb-3">
+                    <i class="bi bi-info-circle"></i>
+                    <span id="totalCount">0</span> заявок всего
+                </div>
+
+                <!-- Результаты поиска ИЛИ полная таблица -->
+                <div id="allApplicationsTableContainer" style="max-height: 60vh; overflow-y: auto;">
+                    <div id="allApplicationsTable">
+                        <!-- Данные будут загружены динамически -->
+                        <div class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Загрузка...</span>
+                            </div>
+                            <p class="mt-2">Загрузка данных...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="w-100 d-flex justify-content-between align-items-center">
+                    <div class="text-muted small">
+                        <i class="bi bi-calendar-check"></i> Группировка по дням редактирования
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle"></i> Закрыть
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="exportAllToExcel()">
+                            <i class="bi bi-file-earmark-excel"></i> Экспорт всего
                         </button>
                     </div>
                 </div>

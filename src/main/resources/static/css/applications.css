@@ -221,6 +221,7 @@ input[type="radio"]#resolutionNok {
 .form-control {
     padding: 6px 8px;
     font-size: 0.9em;
+    min-height: 35px;
 }
 
 .form-label {
@@ -471,4 +472,615 @@ input[type="radio"]#resolutionNok {
     to {
         opacity: 0;
     }
+}
+
+/* Стили для таблицы всех заявок */
+.date-group {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    border-left: 4px solid #1976d2;
+    border-radius: 4px;
+    padding: 8px 12px;
+    margin: 15px 0 10px 0;
+    font-weight: 600;
+    color: #0d47a1;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.date-group:hover {
+    background: linear-gradient(135deg, #bbdefb 0%, #90caf9 100%);
+}
+
+.date-group.expanded {
+    background: linear-gradient(135deg, #90caf9 0%, #64b5f6 100%);
+}
+
+.date-group .badge {
+    background-color: #0d47a1;
+    font-size: 0.8em;
+    margin-left: 8px;
+}
+
+.all-applications-table {
+    width: 100%;
+    font-size: 0.85em;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.all-applications-table th {
+    background-color: #f8f9fa;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    font-weight: 600;
+    color: #495057;
+    border-bottom: 2px solid #dee2e6;
+    padding: 8px 6px;
+}
+
+.all-applications-table td {
+    padding: 6px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.all-applications-table tr {
+    transition: background-color 0.2s;
+}
+
+.all-applications-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+.all-applications-table .app-row {
+    cursor: pointer;
+    border-left: 3px solid transparent;
+}
+
+.all-applications-table .app-row.ok {
+    border-left-color: #28a745;
+}
+
+.all-applications-table .app-row.nok {
+    border-left-color: #dc3545;
+}
+
+.all-applications-table .app-row.highlighted {
+    background-color: #fff3cd !important;
+    border-left-color: #ffc107;
+}
+
+.compact-cell {
+    padding: 6px !important;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.comments-cell {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.date-navigation {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 15px 0;
+    flex-wrap: wrap;
+}
+
+.date-chip {
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.85em;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.date-chip:hover {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+    transform: translateY(-2px);
+}
+
+.date-chip.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+    font-weight: 600;
+}
+
+.date-content {
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+/* Стили для переключателя автообновления */
+.form-switch .form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.form-switch .form-check-input:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.form-switch .form-check-label {
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Стили для статистики таблицы */
+#allTableStats {
+    font-size: 0.9em;
+    padding: 10px 15px;
+    margin-bottom: 15px;
+}
+
+#allTableStats strong {
+    font-weight: 600;
+}
+
+/* Улучшения для модального окна всех заявок */
+.modal-xl {
+    max-width: 1200px;
+}
+
+.modal-xl .modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+/* Стили для кнопок управления таблицей */
+.btn-sm {
+    padding: 4px 8px;
+    font-size: 0.8em;
+}
+
+.btn-outline-primary.btn-sm {
+    border-width: 1px;
+}
+
+.btn-outline-danger.btn-sm {
+    border-width: 1px;
+}
+
+/* Стили для результатов поиска */
+.search-results-header {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-left: 4px solid #1976d2;
+}
+
+.search-results-header .alert {
+    margin: 0;
+    border: none;
+}
+
+.search-result {
+    background-color: #fffde7 !important;
+    transition: all 0.3s ease;
+}
+
+.search-result:hover {
+    background-color: #fff9c4 !important;
+}
+
+.search-result.highlighted {
+    background-color: #fff176 !important;
+    border-left: 4px solid #f57c00 !important;
+}
+
+/* Кнопки управления поиском */
+.search-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.search-controls .btn-group {
+    flex-grow: 1;
+}
+
+/* Анимация появления результатов */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.search-results-header {
+    animation: slideDown 0.3s ease;
+}
+
+/* Индикатор активного поиска */
+.search-active-indicator {
+    position: sticky;
+    top: 0;
+    background: #fff3cd;
+    border-bottom: 2px solid #ffc107;
+    padding: 8px 15px;
+    z-index: 100;
+    margin-bottom: 15px;
+    border-radius: 4px;
+}
+
+/* Стили для расширенного поиска */
+.advanced-search {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.advanced-search-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+
+/* Стили для спиннера загрузки */
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* Улучшения для скроллбара */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Анимации */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.date-content {
+    animation: fadeIn 0.3s ease;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .container {
+        max-width: 100%;
+        padding: 10px;
+    }
+
+    .form-section, .sidebar {
+        height: auto;
+        min-height: 500px;
+    }
+
+    .checkbox-group {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+
+    .date-navigation {
+        justify-content: flex-start;
+        gap: 5px;
+    }
+
+    .date-chip {
+        font-size: 0.75em;
+        padding: 3px 8px;
+    }
+
+    .modal-dialog-issues {
+        margin: 0.5rem;
+        max-width: 100%;
+    }
+
+    .modal-content-issues {
+        width: 100%;
+    }
+
+    .search-controls {
+        flex-direction: column;
+    }
+
+    .search-controls .input-group {
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .form-section, .sidebar {
+        padding: 15px;
+    }
+
+    .checkbox-group {
+        grid-template-columns: 1fr;
+    }
+
+    .resolution-group {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .export-buttons {
+        flex-direction: column;
+    }
+
+    .date-navigation {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        padding-bottom: 5px;
+    }
+
+    .modal-body {
+        padding: 1rem;
+    }
+
+    .modal-header, .modal-footer {
+        padding: 1rem;
+    }
+}
+
+/* Стили для уведомлений */
+.alert-dismissible {
+    padding-right: 3rem;
+}
+
+.alert-dismissible .btn-close {
+    padding: 1.25rem 1rem;
+}
+
+/* Стили для мастер-чекбокса */
+.card {
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: 0.375rem;
+}
+
+.card-body {
+    padding: 0.75rem 1rem;
+}
+
+/* Стили для полей формы в модальном окне */
+.modal-body .form-control,
+.modal-body .form-select {
+    font-size: 0.9em;
+}
+
+.modal-body .form-label {
+    font-size: 0.85em;
+    font-weight: 500;
+}
+
+/* Стили для кнопок в таблице */
+.table .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75em;
+}
+
+/* Стили для плохого интернет соединения */
+#internetReason {
+    resize: vertical;
+    min-height: 35px;
+}
+
+/* Стили для выделения активного элемента */
+:focus {
+    outline: 2px solid #0d6efd;
+    outline-offset: 2px;
+}
+
+/* Стили для недоступных элементов */
+.disabled, :disabled {
+    opacity: 0.65;
+    pointer-events: none;
+}
+
+/* Стили для валидации форм */
+.is-invalid {
+    border-color: #dc3545 !important;
+}
+
+.is-valid {
+    border-color: #198754 !important;
+}
+
+.invalid-feedback {
+    display: none;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.875em;
+    color: #dc3545;
+}
+
+.is-invalid ~ .invalid-feedback {
+    display: block;
+}
+
+/* Стили для тултипов */
+[data-bs-toggle="tooltip"] {
+    cursor: help;
+}
+
+/* Стили для разделителей */
+hr {
+    margin: 1.5rem 0;
+    border: 0;
+    border-top: 1px solid rgba(0,0,0,.1);
+}
+
+/* Стили для текста с переносом */
+.text-wrap {
+    white-space: normal !important;
+}
+
+.text-nowrap {
+    white-space: nowrap !important;
+}
+
+/* Стили для выравнивания */
+.text-start {
+    text-align: left !important;
+}
+
+.text-center {
+    text-align: center !important;
+}
+
+.text-end {
+    text-align: right !important;
+}
+
+/* Стили для отступов */
+.mt-0 {
+    margin-top: 0 !important;
+}
+
+.mb-0 {
+    margin-bottom: 0 !important;
+}
+
+.ms-auto {
+    margin-left: auto !important;
+}
+
+.me-auto {
+    margin-right: auto !important;
+}
+
+/* Стили для размеров шрифта */
+.fs-1 {
+    font-size: calc(1.375rem + 1.5vw) !important;
+}
+
+.fs-2 {
+    font-size: calc(1.325rem + 0.9vw) !important;
+}
+
+.fs-3 {
+    font-size: calc(1.3rem + 0.6vw) !important;
+}
+
+.fs-4 {
+    font-size: calc(1.275rem + 0.3vw) !important;
+}
+
+.fs-5 {
+    font-size: 1.25rem !important;
+}
+
+.fs-6 {
+    font-size: 1rem !important;
+}
+
+/* Стили для фона */
+.bg-light {
+    background-color: #f8f9fa !important;
+}
+
+.bg-dark {
+    background-color: #212529 !important;
+}
+
+/* Стили для теней */
+.shadow-sm {
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075) !important;
+}
+
+.shadow {
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
+}
+
+.shadow-lg {
+    box-shadow: 0 1rem 3rem rgba(0,0,0,.175) !important;
+}
+
+/* Стили для границ */
+.border {
+    border: 1px solid #dee2e6 !important;
+}
+
+.border-top {
+    border-top: 1px solid #dee2e6 !important;
+}
+
+.border-end {
+    border-right: 1px solid #dee2e6 !important;
+}
+
+.border-bottom {
+    border-bottom: 1px solid #dee2e6 !important;
+}
+
+.border-start {
+    border-left: 1px solid #dee2e6 !important;
+}
+
+.border-0 {
+    border: 0 !important;
+}
+
+/* Стили для скругления углов */
+.rounded {
+    border-radius: 0.375rem !important;
+}
+
+.rounded-circle {
+    border-radius: 50% !important;
+}
+
+.rounded-pill {
+    border-radius: 50rem !important;
+}
+
+/* Стили для видимости */
+.visible {
+    visibility: visible !important;
+}
+
+.invisible {
+    visibility: hidden !important;
 }
