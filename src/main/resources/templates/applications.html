@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Онлайн проверка</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <!-- Наши стили -->
+    <link th:href="@{/css/applications.css}" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-3">
+    <h1 class="mb-3" style="font-size: 1.8rem;">Онлайн проверка</h1>
+
+    <div class="row">
+        <!-- Левая часть - форма -->
+        <div class="col-lg-8 col-md-7">
+            <div class="form-section">
+                <!-- Поиск -->
+                <form th:action="@{/applications/search}" method="post" class="mb-3" id="searchForm">
+                    <div class="input-group" style="height: 38px;">
+                        <input type="text" name="number" class="form-control" id="searchInput"
+                               placeholder="Введите номер заявки" maxlength="12" required
+                               th:value="${application.applicationNumber}">
+                        <button type="submit" class="btn btn-primary">Чек</button>
+                    </div>
+                </form>
+
+                <!-- Сообщения -->
+                <div th:if="${success}" class="alert alert-success alert-dismissible fade show py-2">
+                    <i class="bi bi-check-circle"></i> <span th:text="${success}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show py-2">
+                    <i class="bi bi-exclamation-circle"></i> <span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <div th:if="${message}" class="alert alert-info alert-dismissible fade show py-2">
+                    <i class="bi bi-info-circle"></i> <span th:text="${message}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <!-- Форма данных -->
+                <form th:action="@{/applications/save}" method="post" th:object="${application}" id="applicationForm">
+                    <input type="hidden" th:field="*{id}" id="appId" />
+                    <input type="hidden" id="currentAppNumber" th:value="${application.applicationNumber}">
+
+                    <!-- Основные поля -->
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <label class="form-label">Номер заявки *</label>
+                            <input type="text" th:field="*{applicationNumber}" class="form-control" required
+                                   id="appNumberField">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Инженер *</label>
+                            <input type="text" th:field="*{engineer}" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <label class="form-label">Уровень GSM</label>
+                            <input type="text" th:field="*{gsmLevel}" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Уровень интернета</label>
+                            <input type="text" th:field="*{internetLevel}" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="mb-2 autocomplete-container">
+                        <label class="form-label">Причина, по которой не подключен интернет</label>
+                        <textarea th:field="*{internetReason}"
+                                  class="form-control"
+                                  rows="2"
+                                  maxlength="100"
+                                  id="internetReason"
+                                  autocomplete="off"></textarea>
+                        <div id="internetReasonAutocomplete" class="autocomplete-items"></div>
+                    </div>
+
+                    <!-- Мастер-чекбокс -->
+                    <div class="card mb-2">
+                        <div class="card-body py-1">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="masterCheck">
+                                <label class="form-check-label fw-bold" for="masterCheck">
+                                    Мастер-чек
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Чекбоксы -->
+                    <div class="checkbox-group">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" th:field="*{mpkInstalled}" id="mpkInstalled">
+                            <label class="form-check-label" for="mpkInstalled">МПК</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" th:field="*{highCeiling}" id="highCeiling">
+                            <label class="form-check-label" for="highCeiling">Высокий потолок</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" th:field="*{sensorConnectLevel}" id="sensorConnectLevel">
+                            <label class="form-check-label" for="sensorConnectLevel">Уровень датчиков</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" th:field="*{animals}" id="animals">
+                            <label class="form-check-label" for="animals">Животные или пылесос</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" th:field="*{nightMode}" id="nightMode">
+                            <label class="form-check-label" for="nightMode">Ночной режим</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" th:field="*{sensorsOk}" id="sensorsOk">
+                            <label class="form-check-label" for="sensorsOk">Датчики установлены по экспертизе</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" th:field="*{label}" id="label">
+                            <label class="form-check-label" for="label">Наклейка</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" th:field="*{avr}" id="avr">
+                            <label class="form-check-label" for="avr">АВР</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" th:field="*{systemPhoto}" id="systemPhoto">
+                            <label class="form-check-label" for="systemPhoto">Фото объекта, панели, клавиатуры, сим</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" th:field="*{floorPlan}" id="floorPlan">
+                            <label class="form-check-label" for="floorPlan">Поэтажный план</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" th:field="*{secondForm}" id="secondForm">
+                            <label class="form-check-label" for="secondForm">Форма 002</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" th:field="*{docs}" id="docs">
+                            <label class="form-check-label" for="docs">ПУД и ДО</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" th:field="*{roadMap}" id="roadMap">
+                            <label class="form-check-label" for="roadMap">Подъездные пути</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" th:field="*{publicName}" id="publicName">
+                            <label class="form-check-label" for="publicName">Публичное наименование</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" th:field="*{checkList}" id="checkList">
+                            <label class="form-check-label" for="checkList">Чек-лист</label>
+                        </div>
+                    </div>
+
+                    <!-- Дата и инспектор -->
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <label class="form-label">Дата установки</label>
+                            <input type="text" th:field="*{installationDate}" class="form-control"
+                                   th:value="${application.installationDate ?: today}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Проверяющий</label>
+                            <input type="text" th:field="*{inspector}" class="form-control">
+                        </div>
+                    </div>
+
+                    <!-- Кнопка для открытия дерева нарушений -->
+                    <div class="mb-3 issues-tree-btn-container">
+                        <button type="button" class="btn btn-outline-primary issues-tree-btn" id="openIssuesTreeBtn">
+                            <i class="bi bi-diagram-3"></i> Типовые нарушения
+                        </button>
+                    </div>
+
+                    <!-- Комментарии -->
+                    <div class="mb-3">
+                        <label class="form-label">Комментарии</label>
+                        <textarea th:field="*{comments}" class="form-control" rows="4" maxlength="2000"
+                                  id="commentsField"
+                                  placeholder="Комментарии добавляются через запятую. Пример: нет фото объекта, нет формы 002">
+                        </textarea>
+                    </div>
+
+                    <!-- Резолюция -->
+                    <div class="mb-3">
+                        <label class="form-label">Резолюция</label><br>
+                        <div class="resolution-group">
+                            <div class="resolution-check">
+                                <input type="radio" class="resolution-radio" th:field="*{resolution}" th:value="true" id="resolutionOk">
+                                <label class="resolution-label" for="resolutionOk">OK</label>
+                            </div>
+                            <div class="resolution-check">
+                                <input type="radio" class="resolution-radio" th:field="*{resolution}" th:value="false" id="resolutionNok">
+                                <label class="resolution-label" for="resolutionNok">NOK</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Кнопка "Копировать комментарии" -->
+                    <div class="mb-3">
+                        <button type="button" class="btn btn-success w-100" id="copyCommentsBtn" onclick="copyCommentsToClipboard()">
+                            <i class="bi bi-clipboard-check"></i> Копировать комментарии в буфер обмена
+                        </button>
+                    </div>
+
+                    <!-- Кнопки -->
+                    <div class="d-flex justify-content-between">
+                        <a th:href="@{/applications/clear}" class="btn btn-secondary">
+                            <i class="bi bi-eraser"></i> Очистить форму
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Сохранить заявку
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Правая часть - список -->
+        <div class="col-lg-4 col-md-5">
+            <div class="sidebar">
+                <h5 class="mb-2" style="font-size: 1.1rem;">
+                    <i class="bi bi-list-check"></i> Заявки
+                    <span class="badge bg-secondary" id="applicationsCount" th:text="${applications.size()}"></span>
+                </h5>
+
+                <!-- Экспорт -->
+                <div class="mb-3">
+                    <h6 style="font-size: 0.95rem;">Экспорт в Excel</h6>
+                    <div class="export-buttons">
+                        <a href="/api/applications/export" class="btn btn-outline-success btn-sm">
+                            <i class="bi bi-file-earmark-excel"></i> Все заявки
+                        </a>
+                        <a href="/api/applications/export/today" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-calendar-check"></i> Обработанные сегодня
+                        </a>
+                        <div class="input-group input-group-sm mt-1">
+                            <input type="text" id="exportNumber" class="form-control" placeholder="Номер заявки">
+                            <button type="button" class="btn btn-outline-secondary" onclick="exportSingle()">
+                                <i class="bi bi-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ПОИСК В СПИСКЕ ЗАЯВОК -->
+                <div class="search-list-container">
+                    <div class="input-group input-group-sm mb-2">
+                        <input type="text" class="form-control" id="searchListInput"
+                               placeholder="Поиск по номеру заявки...">
+                        <button class="btn btn-outline-secondary" type="button" onclick="searchInList()">
+                            <i class="bi bi-search"></i>
+                        </button>
+                        <button class="btn btn-outline-danger" type="button" onclick="clearListSearch()" title="Показать все">
+                            <i class="bi bi-x-circle"></i>
+                        </button>
+                    </div>
+                    <div id="searchListInfo" class="search-list-info" style="display: none;">
+                        Найдена 1 заявка. <a href="#" onclick="clearListSearch()" class="text-primary">Показать все</a>
+                    </div>
+                </div>
+
+                <!-- Список заявок -->
+                <div class="applications-list-container" id="applicationsList">
+                    <div th:each="app : ${applications}">
+                        <div class="application-item clickable"
+                             th:classappend="${app.resolution} ? 'application-ok' : 'application-nok'"
+                             th:data-number="${app.applicationNumber}"
+                             onclick="loadApplication(this)">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div style="line-height: 1.2;">
+                                    <div>
+                                        <strong class="app-number" th:text="${app.applicationNumber}"></strong>
+                                        <span class="text-muted ms-2" th:text="${app.engineer}" style="font-size: 0.85em;"></span>
+                                    </div>
+                                    <div class="small text-muted" th:text="${app.installationDate}"></div>
+                                </div>
+                                <div class="d-flex align-items-center gap-1">
+                                    <span th:text="${app.resolution} ? 'OK' : 'NOK'"
+                                          th:classappend="${app.resolution} ? 'text-success' : 'text-danger'"
+                                          class="badge">
+                                    </span>
+                                    <form th:action="@{/applications/delete/{id}(id=${app.id})}"
+                                          method="post"
+                                          style="display: inline;"
+                                          onsubmit="return confirm('Удалить заявку?')">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger ms-1"
+                                                onclick="event.stopPropagation()">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div th:if="${applications.isEmpty()}" class="text-center text-muted py-3">
+                        <i class="bi bi-inbox" style="font-size: 1.5rem;"></i>
+                        <p class="mt-1">Нет заявок</p>
+                        <a href="/add-test-data" class="btn btn-sm btn-primary mt-1">
+                            <i class="bi bi-plus-circle"></i> Добавить тестовые данные
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для дерева нарушений -->
+<div class="modal fade" id="issuesTreeModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-issues">
+        <div class="modal-content modal-content-issues">
+            <div class="modal-header modal-header-issues">
+                <h5 class="modal-title">
+                    <i class="bi bi-diagram-3 me-2"></i>Типовые нарушения
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body modal-body-issues">
+                <!-- Панель информации о выбранных нарушениях -->
+                <div id="selectedIssuesInfo" class="issues-selected-info" style="display: none;">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <span id="selectedCount">0</span> косяков выбрано
+                </div>
+
+                <!-- Панель поиска -->
+                <div class="issues-search-container">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="searchIssuesInput"
+                               placeholder="Быстрый поиск по нарушениям...">
+                        <button class="btn btn-outline-primary" type="button" onclick="searchIssues()">
+                            <i class="bi bi-search"></i> Найти
+                        </button>
+                        <button class="btn btn-outline-secondary" type="button" onclick="clearIssuesSearch()" title="Очистить поиск">
+                            <i class="bi bi-x-circle"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Панель действий -->
+                <div class="issues-actions-bar">
+                    <div>
+                        <button type="button" class="btn btn-outline-primary btn-sm me-2" onclick="expandAllCategories()">
+                            <i class="bi bi-arrows-expand"></i> Развернуть все
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm me-2" onclick="collapseAllCategories()">
+                            <i class="bi bi-arrows-collapse"></i> Свернуть все
+                        </button>
+                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="clearSelectedIssues()">
+                            <i class="bi bi-trash"></i> Очистить выбор
+                        </button>
+                    </div>
+                    <div class="text-muted" style="font-size: 0.85em;">
+                        Нажмите на нарушение, чтобы выбрать/снять выбор
+                    </div>
+                </div>
+
+                <!-- Контейнер для дерева нарушений -->
+                <div class="issues-tree-container">
+                    <div class="issues-tree" id="issuesTreeContainer">
+                        <!-- Дерево будет генерироваться JavaScript -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer modal-footer-issues">
+                <div class="w-100 d-flex justify-content-between align-items-center">
+                    <div class="text-muted" style="font-size: 0.9em;">
+                        <i class="bi bi-lightbulb"></i> Выбранные нарушения будут добавлены в комментарии
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle"></i> Отмена
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="addSelectedIssuesToComments()">
+                            <i class="bi bi-check-circle"></i> Добавить выбранные
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Наш JavaScript -->
+<script th:src="@{/js/applications.js}"></script>
+</body>
+</html>
