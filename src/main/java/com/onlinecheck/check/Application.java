@@ -8,19 +8,12 @@ import java.time.LocalDateTime;
  * КЛАСС APPLICATION - ОПИСАНИЕ
  * ================================================
  *
- * Что это такое:
  * Это "форма/шаблон" для одной заявки в системе.
  * Каждый объект этого класса = одна строка в таблице БД.
  */
 
-// @Entity - ГОВОРИТ SPRING: "ЭТО ТАБЛИЦА В БАЗЕ ДАННЫХ!"
-// Spring увидит эту аннотацию и создаст таблицу "applications" в БД
 @Entity
 
-// @Table - НАСТРОЙКА ТАБЛИЦЫ
-// name="applications" - таблица будет называться "applications"
-// uniqueConstraints - ограничения уникальности
-// indexes - индексы для ускорения поиска
 @Table(name = "applications", uniqueConstraints = {
         @UniqueConstraint(columnNames = "applicationNumber") // Номер заявки ДОЛЖЕН быть уникальным
 }, indexes = {
@@ -68,7 +61,7 @@ public class Application {
     private String inspector;           // Кто проверял заявку
 
     @Column(length = 2000)
-    private String comments; // Комментарии/замечания по заявке (включая косяки через запятую)
+    private String comments; // Комментарии/замечания по заявке
 
     private boolean resolution; // Резолюция проверки: true=OK, false=NOK
 
