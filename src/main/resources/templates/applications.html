@@ -273,8 +273,8 @@
                         <button class="btn btn-outline-secondary" type="button" onclick="searchInList()">
                             <i class="bi bi-search"></i>
                         </button>
-                        <button class="btn btn-outline-danger" type="button" onclick="clearListSearch()" title="Показать все">
-                            <i class="bi bi-x-circle"></i>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="showAllApplications()">
+                            <i class="bi bi-x-circle"></i> Показать все
                         </button>
                     </div>
                     <div id="searchListInfo" class="search-list-info" style="display: none;">
@@ -372,6 +372,7 @@
 </div>
 
 <!-- Модальное окно для таблицы всех заявок -->
+<!-- Модальное окно для таблицы всех заявок -->
 <div class="modal fade" id="allApplicationsModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -383,7 +384,7 @@
             </div>
             <div class="modal-body">
                 <!-- Улучшенная панель управления -->
-                <div class="search-controls">
+                <div class="search-controls d-flex flex-wrap gap-2 mb-3">
                     <div class="input-group" style="flex-grow: 1;">
                         <input type="text" class="form-control" id="searchAllTable"
                                placeholder="Поиск по номеру, инженеру, комментариям...">
@@ -395,18 +396,31 @@
                             <i class="bi bi-x-circle"></i>
                         </button>
                     </div>
-                    <div class="input-group" style="width: 200px;">
-                        <input type="date" class="form-control" id="dateFilter">
-                        <button class="btn btn-outline-primary" type="button" onclick="filterByDate()">
-                            <i class="bi bi-filter"></i>
+                    <div class="input-group" style="width: 320px;">
+                        <input type="date" class="form-control" id="dateFilter"
+                               placeholder="Дата редактирования">
+                        <button class="btn btn-outline-primary" type="button" onclick="filterByDate()"
+                                title="Показать заявки за эту дату">
+                            <i class="bi bi-calendar-check"></i> Фильтр
+                        </button>
+                        <button class="btn btn-outline-danger" type="button" onclick="clearDateFilter()"
+                                title="Очистить фильтр даты" id="clearDateFilterBtn" style="display: none;">
+                            <i class="bi bi-x-circle"></i>
                         </button>
                     </div>
                 </div>
 
-                <!-- Статистика -->
+                <!-- Статистика с поддержкой фильтра даты -->
                 <div id="allTableStats" class="alert alert-info py-2 mb-3">
                     <i class="bi bi-info-circle"></i>
                     <span id="totalCount">0</span> заявок всего
+                    <span id="dateFilterStats" style="display: none;">
+                        | Фильтр по дате: <strong id="selectedDateDisplay"></strong>
+                        (<span id="dateFilterCount">0</span> заявок)
+                        <button class="btn btn-sm btn-outline-danger ms-2" onclick="clearDateFilter()">
+                            <i class="bi bi-x-circle"></i> Очистить фильтр
+                        </button>
+                    </span>
                 </div>
 
                 <!-- Результаты поиска ИЛИ полная таблица -->
@@ -444,6 +458,6 @@
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <!-- Наш JavaScript -->
-<script th:src="@{/js/applications.js}"></script>
+<script type="module" th:src="@{/js/applications.js}"></script>
 </body>
 </html>

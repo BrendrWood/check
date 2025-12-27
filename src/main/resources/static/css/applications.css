@@ -961,126 +961,620 @@ hr {
     white-space: nowrap !important;
 }
 
-/* Стили для выравнивания */
-.text-start {
-    text-align: left !important;
+/* ============================================
+   ИСПРАВЛЕНИЯ ДЛЯ МОДАЛЬНОГО ОКНА ВСЕХ ЗАЯВОК
+   ============================================ */
+
+/* Контейнер модального окна */
+.modal-xl .modal-content {
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
 }
 
-.text-center {
-    text-align: center !important;
+/* Заголовок модального окна */
+.modal-xl .modal-header {
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+    color: white;
+    border-bottom: none;
+    padding: 1rem 1.5rem;
 }
 
-.text-end {
-    text-align: right !important;
+/* Тело модального окна */
+.modal-xl .modal-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    max-height: 65vh;
+    padding: 1.5rem;
 }
 
-/* Стили для отступов */
-.mt-0 {
-    margin-top: 0 !important;
+/* Футер модального окна */
+.modal-xl .modal-footer {
+    flex-shrink: 0;
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    padding: 1rem 1.5rem;
 }
 
-.mb-0 {
-    margin-bottom: 0 !important;
+/* Контейнер для таблицы */
+#allApplicationsTableContainer {
+    min-height: 400px;
+    max-height: 50vh;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    background: white;
 }
 
-.ms-auto {
-    margin-left: auto !important;
+/* Панель управления поиском */
+.search-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    align-items: center;
 }
 
-.me-auto {
-    margin-right: auto !important;
+.search-controls .input-group {
+    flex: 1;
+    min-width: 300px;
 }
 
-/* Стили для размеров шрифта */
-.fs-1 {
-    font-size: calc(1.375rem + 1.5vw) !important;
+.search-controls .input-group:last-child {
+    flex: 0 1 auto;
+    min-width: 250px;
 }
 
-.fs-2 {
-    font-size: calc(1.325rem + 0.9vw) !important;
+/* Статистика */
+#allTableStats {
+    background-color: #e7f1ff;
+    border: 1px solid #cfe2ff;
+    border-radius: 5px;
+    padding: 10px 15px;
+    margin-bottom: 15px;
 }
 
-.fs-3 {
-    font-size: calc(1.3rem + 0.6vw) !important;
+/* Стили для даты в статистике */
+#allTableStats strong {
+    color: #0d6efd;
 }
 
-.fs-4 {
-    font-size: calc(1.275rem + 0.3vw) !important;
+/* Кнопки в статистике */
+#allTableStats .btn-sm {
+    padding: 2px 8px;
+    font-size: 0.8em;
 }
 
-.fs-5 {
-    font-size: 1.25rem !important;
+/* Улучшения для таблицы в модальном окне */
+.all-applications-table {
+    margin-bottom: 0;
 }
 
-.fs-6 {
-    font-size: 1rem !important;
+.all-applications-table th {
+    position: sticky;
+    top: 0;
+    background-color: #f8f9fa;
+    z-index: 10;
 }
 
-/* Стили для фона */
-.bg-light {
-    background-color: #f8f9fa !important;
+/* Фиксированная высота для строк таблицы */
+.all-applications-table tbody tr {
+    height: 45px;
 }
 
-.bg-dark {
-    background-color: #212529 !important;
+/* Стили для кнопок в таблице */
+.all-applications-table .btn-sm {
+    padding: 3px 8px;
+    font-size: 0.75rem;
+    margin: 0 2px;
 }
 
-/* Стили для теней */
-.shadow-sm {
-    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075) !important;
+/* Адаптивность */
+@media (max-width: 1200px) {
+    .modal-xl {
+        max-width: 95%;
+        margin: 0.5rem auto;
+    }
+
+    .search-controls {
+        flex-direction: column;
+    }
+
+    .search-controls .input-group {
+        min-width: 100%;
+    }
 }
 
-.shadow {
-    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
+@media (max-width: 768px) {
+    .modal-xl .modal-body {
+        padding: 1rem;
+        max-height: 60vh;
+    }
+
+    .modal-xl .modal-header,
+    .modal-xl .modal-footer {
+        padding: 0.75rem 1rem;
+    }
+
+    #allApplicationsTableContainer {
+        max-height: 45vh;
+    }
+
+    .compact-cell {
+        max-width: 80px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 0.8em;
+    }
+
+    .comments-cell {
+        max-width: 120px;
+    }
 }
 
-.shadow-lg {
-    box-shadow: 0 1rem 3rem rgba(0,0,0,.175) !important;
+/* Анимация открытия модального окна */
+.modal.fade .modal-dialog {
+    transform: translate(0, -50px);
+    transition: transform 0.3s ease-out;
 }
 
-/* Стили для границ */
-.border {
-    border: 1px solid #dee2e6 !important;
+.modal.show .modal-dialog {
+    transform: translate(0, 0);
 }
 
-.border-top {
-    border-top: 1px solid #dee2e6 !important;
+/* Предотвращение "дергания" при изменении размера */
+.modal {
+    overflow-y: auto;
 }
 
-.border-end {
-    border-right: 1px solid #dee2e6 !important;
+.modal-dialog {
+    margin: 1.75rem auto;
+    max-height: calc(100vh - 3.5rem);
+    display: flex;
+    flex-direction: column;
 }
 
-.border-bottom {
-    border-bottom: 1px solid #dee2e6 !important;
+/* Фикс для кнопки закрытия в заголовке */
+.modal-header .btn-close {
+    padding: 0.5rem;
+    margin: -0.5rem -0.5rem -0.5rem auto;
+    filter: invert(1) grayscale(100%) brightness(200%);
 }
 
-.border-start {
-    border-left: 1px solid #dee2e6 !important;
+/* Стили для группировки по датам в модальном окне */
+.date-group {
+    background-color: #f8f9fa;
+    border-left: 4px solid #0d6efd;
+    padding: 8px 12px;
+    margin: 10px 0;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
 }
 
-.border-0 {
-    border: 0 !important;
+.date-group:hover {
+    background-color: #e9ecef;
 }
 
-/* Стили для скругления углов */
-.rounded {
-    border-radius: 0.375rem !important;
+.date-content {
+    transition: max-height 0.3s ease;
+    overflow: hidden;
 }
 
-.rounded-circle {
-    border-radius: 50% !important;
+/* Кнопки в футере */
+.modal-footer .btn {
+    min-width: 100px;
 }
 
-.rounded-pill {
-    border-radius: 50rem !important;
+#allApplicationsTableContainer {
+    max-height: 50vh;
+    overflow-y: auto;
+    padding-bottom: 0;
+    margin-bottom: 0;
 }
 
-/* Стили для видимости */
-.visible {
-    visibility: visible !important;
+/* Убираем лишние отступы у последней даты */
+.date-group:last-child {
+    margin-bottom: 10px;
 }
 
-.invisible {
-    visibility: hidden !important;
+.date-content:last-child {
+    margin-bottom: 0;
+}
+
+/* Исправление для таблицы в модальном окне */
+.modal-xl .modal-body {
+    padding-bottom: 0;
+}
+
+#allApplicationsTableContainer:empty {
+    min-height: 100px;
+}
+
+/* Фикс для дат навигации */
+.date-navigation {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #dee2e6;
+    margin-bottom: 15px;
+}
+
+/* Подсветка найденных элементов при поиске */
+.issue-button-tree.highlighted {
+    background-color: #fff3cd !important;
+    border-color: #ffc107 !important;
+    color: #856404 !important;
+    font-weight: 600;
+    box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.25);
+    animation: highlightPulse 2s infinite;
+}
+
+@keyframes highlightPulse {
+    0% { background-color: #fff3cd; }
+    50% { background-color: #ffeaa7; }
+    100% { background-color: #fff3cd; }
+}
+
+/* Сообщение о результатах поиска */
+.search-results-info {
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #e7f1ff;
+    border-left: 4px solid #0d6efd;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+/* ============================================
+   СТИЛИ ТАБЛИЦЫ ЗАЯВОК (улучшенные)
+   ============================================ */
+
+/* Модальное окно таблицы заявок - минималистичный стиль */
+#allApplicationsModal .modal-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    color: #495057;
+    border-bottom: 1px solid #dee2e6;
+    padding: 1rem 1.5rem;
+}
+
+#allApplicationsModal .modal-body {
+    padding: 1.25rem;
+}
+
+#allApplicationsModal .modal-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    padding: 1rem 1.5rem;
+}
+
+/* Убираем яркие синие градиенты из других элементов */
+.search-results-header .alert,
+.date-group {
+    background: none;
+    background-color: #f8f9fa;
+}
+
+.date-group {
+    border-left: 3px solid #6c757d;
+    padding: 6px 10px;
+    margin: 8px 0;
+    min-height: 36px;
+    font-size: 0.85em;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.date-group:hover {
+    background-color: #e9ecef;
+}
+
+.date-group .badge {
+    font-size: 0.7em;
+    padding: 1px 5px;
+    margin-left: auto;
+}
+
+.date-group .collapse-icon {
+    font-size: 0.8em;
+    transition: transform 0.2s ease;
+}
+
+/* Компактная навигация по датам */
+.date-navigation {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+    max-height: 80px;
+    overflow-y: auto;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.date-chip {
+    padding: 2px 8px;
+    font-size: 0.75em;
+    border-radius: 12px;
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    color: #495057;
+    transition: all 0.15s ease;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.date-chip:hover {
+    background-color: #dee2e6;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.date-chip.active {
+    background-color: #0d6efd;
+    color: white;
+    border-color: #0d6efd;
+    font-weight: 500;
+}
+
+/* Компактная таблица внутри дней */
+.date-content table {
+    font-size: 0.8em;
+}
+
+.date-content th {
+    padding: 6px 4px;
+    font-size: 0.75em;
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.date-content td {
+    padding: 4px;
+    line-height: 1.2;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.date-content .app-row {
+    height: 32px;
+    transition: background-color 0.2s;
+}
+
+.date-content .app-row:hover {
+    background-color: #f8f9fa;
+}
+
+.date-content .comments-cell {
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Улучшенные кнопки в таблице */
+.date-content .btn-sm {
+    padding: 2px 6px;
+    font-size: 0.75em;
+    line-height: 1.2;
+}
+
+/* Статистика таблицы */
+#allTableStats {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    font-size: 0.9em;
+}
+
+/* Контейнер таблицы с фиксированной высотой */
+#allApplicationsTableContainer {
+    max-height: 60vh;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    background: white;
+}
+
+/* Панель управления поиском */
+.search-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.search-controls .input-group {
+    flex: 1;
+    min-width: 300px;
+}
+
+/* ============================================
+   СТИЛИ МОДАЛЬНОГО ОКНА ТИПОВЫХ НАРУШЕНИЙ (минимализм)
+   ============================================ */
+
+#issuesTreeModal .modal-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    color: #495057;
+    border-bottom: 1px solid #dee2e6;
+}
+
+/* Упрощаем кнопку закрытия */
+.btn-close-white {
+    filter: none;
+    opacity: 0.7;
+}
+
+/* Упрощаем контейнеры */
+.modal-content-issues {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    border: 1px solid #dee2e6;
+}
+
+/* ============================================
+   АДАПТИВНОСТЬ ДЛЯ МНОГИХ ДНЕЙ
+   ============================================ */
+
+/* Автоматическая компактность при многих днях */
+.date-navigation.many-days .date-chip {
+    font-size: 0.7em;
+    padding: 1px 6px;
+    height: 22px;
+}
+
+.date-navigation.many-days .date-group {
+    padding: 4px 8px;
+    font-size: 0.8em;
+    min-height: 32px;
+}
+
+/* Для очень многих дней - горизонтальный скролл */
+.date-navigation.very-many-days {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    max-height: 32px;
+    padding-bottom: 5px;
+}
+
+/* ============================================
+   АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ
+   ============================================ */
+
+@media (max-width: 768px) {
+    .date-chip {
+        font-size: 0.7em;
+        padding: 1px 6px;
+    }
+
+    .date-group {
+        padding: 4px 8px;
+        font-size: 0.8em;
+        min-height: 32px;
+    }
+
+    .date-content table {
+        font-size: 0.75em;
+    }
+
+    .search-controls {
+        flex-direction: column;
+    }
+
+    .search-controls .input-group {
+        min-width: 100%;
+    }
+
+    #allApplicationsTableContainer {
+        max-height: 50vh;
+    }
+}
+
+@media (max-width: 576px) {
+    .date-navigation {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
+
+    .date-content .compact-cell {
+        max-width: 80px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 0.8em;
+    }
+
+    .date-content .comments-cell {
+        max-width: 100px;
+    }
+}
+
+/* ============================================
+   РАДИО-ПРОКРУТКА ДАТ (новая функция)
+   ============================================ */
+
+/* Эти стили используются для радио-прокрутки */
+.date-radio-scroll-container {
+    position: relative;
+    width: 100%;
+    height: 60px;
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+.date-radio-scroll {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 0 40%;
+}
+
+.date-radio-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.date-radio-chip {
+    flex: 0 0 auto;
+    padding: 6px 12px;
+    margin: 0 8px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 20px;
+    font-size: 0.85em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+/* ============================================
+   ОБЩИЕ УЛУЧШЕНИЯ ДИЗАЙНА
+   ============================================ */
+
+/* Более тонкие тени */
+.card {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Упрощенные алерты */
+.alert {
+    border: 1px solid #dee2e6;
+    box-shadow: none;
+}
+
+/* Улучшенные скроллбары */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #adb5bd;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #6c757d;
+}
+
+/* Анимация открытия групп дат */
+.date-content {
+    animation: fadeIn 0.3s ease;
 }
