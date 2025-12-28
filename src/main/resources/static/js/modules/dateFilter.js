@@ -4,7 +4,7 @@
 
 import { state, MESSAGES } from '../config.js';
 import { showMessageInModal, showTempMessage } from './ui.js';
-import { renderApplicationsAsTable, attachTableRowHandlers, loadAllApplicationsTable, renderAllApplicationsTable } from './applicationsTable.js';
+import { renderApplicationsAsTable, attachTableRowHandlers, loadAllApplicationsTable } from './applicationsTable.js';
 import { formatDateForDisplay } from './utils.js';
 
 // ============================================
@@ -89,20 +89,23 @@ export async function filterByDate() {
             return;
         }
 
-        // 4. Показываем результаты
-        displayDateFilterResults(filteredApplications, selectedDate);
-
-        // 5. Сохраняем как активный фильтр
-        state.isDateFilterActive = true;
+        // 4. Сохраняем отфильтрованные заявки для экспорта
+        state.dateFilteredApplications = filteredApplications;
         state.currentDateFilter = selectedDate;
 
-        // 6. Показываем кнопку очистки
+        // 5. Показываем результаты
+        displayDateFilterResults(filteredApplications, selectedDate);
+
+        // 6. Сохраняем как активный фильтр
+        state.isDateFilterActive = true;
+
+        // 7. Показываем кнопку очистки
         const clearBtn = document.getElementById('clearDateFilterBtn');
         if (clearBtn) {
             clearBtn.style.display = 'inline-block';
         }
 
-        // 7. Обновляем статистику
+        // 8. Обновляем статистику
         updateDateFilterStats(filteredApplications.length, selectedDate);
 
     } catch (error) {
@@ -139,6 +142,9 @@ function displayDateFilterResults(applications, selectedDate) {
         weekday: 'long'
     });
 
+    // Используем dataset для хранения даты вместо передачи в onclick
+    const exportButtonId = 'exportDateButton_' + Date.now();
+
     let html = `
         <div class="search-results-header mb-4">
             <div class="alert alert-success">
@@ -150,7 +156,8 @@ function displayDateFilterResults(applications, selectedDate) {
                     </div>
                     <div>
                         <button class="btn btn-sm btn-outline-primary me-2"
-                                onclick="exportDateFilterResults('${selectedDate}')">
+                                id="${exportButtonId}"
+                                data-date="${selectedDate}">
                             <i class="bi bi-file-earmark-excel"></i> Экспорт
                         </button>
                         <button class="btn btn-sm btn-outline-secondary" onclick="showAllApplications()">
@@ -166,6 +173,15 @@ function displayDateFilterResults(applications, selectedDate) {
     html += renderApplicationsAsTable(applications, true);
 
     container.innerHTML = html;
+
+    // Добавить обработчик для кнопки экспорта
+    const exportButton = document.getElementById(exportButtonId);
+    if (exportButton) {
+        exportButton.addEventListener('click', function() {
+            const date = this.getAttribute('data-date');
+            exportDateFilterResults(date);
+        });
+    }
 
     // Добавить обработчики для строк
     attachTableRowHandlers();
@@ -185,36 +201,98 @@ function updateDateFilterStats(count, selectedDate) {
         year: 'numeric'
     });
 
+    // Используем dataset для хранения даты вместо передачи в onclick
+    const exportButtonId = 'exportDateStatsButton_' + Date.now();
+
     statsElement.innerHTML = `
         <i class="bi bi-calendar-check"></i>
         Активный фильтр: <strong>${formattedDate}</strong> |
         Найдено: <strong>${count}</strong> заявок
         <button class="btn btn-sm btn-outline-success ms-2"
-                onclick="exportDateFilterResults('${selectedDate}')">
+                id="${exportButtonId}"
+                data-date="${selectedDate}">
             <i class="bi bi-file-earmark-excel"></i> Экспорт
         </button>
         <button class="btn btn-sm btn-outline-danger ms-2" onclick="showAllApplications()">
             <i class="bi bi-x-circle"></i> Показать все
         </button>
     `;
+
+    // Добавить обработчик для кнопки экспорта в статистике
+    const exportStatsButton = document.getElementById(exportButtonId);
+    if (exportStatsButton) {
+        exportStatsButton.addEventListener('click', function() {
+            const date = this.getAttribute('data-date');
+            exportDateFilterResults(date);
+        });
+    }
 }
 
 /**
- * Экспорт результатов фильтра по дате
+ * Экспорт результатов фильтра по дате - РАБОЧАЯ ВЕРСИЯ
  */
 export function exportDateFilterResults(date) {
-    const exportDate = date.replace(/-/g, '');
-    const fileName = `applications_${exportDate}.xlsx`;
-    const url = `/api/applications/export/date/${date}`;
+    // Получаем дату из параметра или из state
+    let exportDate = date;
 
-    // Создаем скрытую ссылку для скачивания
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = fileName;
-    link.style.display = 'none';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    if (!exportDate || exportDate === 'undefined' || exportDate === 'null') {
+        // Пытаемся получить дату из state
+        exportDate = state.currentDateFilter;
+
+        if (!exportDate) {
+            console.error('Некорректная дата для экспорта');
+            showTempMessage('Ошибка: дата не определена. Выберите дату фильтра.', 'error');
+            return;
+        }
+    }
+
+    console.log('Exporting for date:', exportDate);
+
+    // Проверяем, есть ли заявки для этой даты
+    if (!state.dateFilteredApplications || state.dateFilteredApplications.length === 0) {
+        showTempMessage('Нет данных для экспорта', 'warning');
+        return;
+    }
+
+    // Создаем форму для экспорта как в exportSearchResults
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/api/applications/export/search';
+    form.style.display = 'none';
+    form.target = '_blank';
+
+    // Подготавливаем ID заявок
+    const ids = state.dateFilteredApplications.map(app => app.id);
+
+    // Добавляем результаты поиска
+    const searchResultsInput = document.createElement('input');
+    searchResultsInput.type = 'hidden';
+    searchResultsInput.name = 'searchResults';
+    searchResultsInput.value = JSON.stringify(ids);
+    form.appendChild(searchResultsInput);
+
+    // Добавляем название поиска
+    const searchNameInput = document.createElement('input');
+    searchNameInput.type = 'hidden';
+    searchNameInput.name = 'searchName';
+    searchNameInput.value = `applications_${exportDate.replace(/-/g, '')}`;
+    form.appendChild(searchNameInput);
+
+    // Добавляем форму на страницу
+    document.body.appendChild(form);
+
+    // Показываем сообщение
+    showTempMessage('Начинается экспорт файла...', 'info');
+
+    // Отправляем форму
+    form.submit();
+
+    // Удаляем форму
+    setTimeout(() => {
+        if (form.parentNode) {
+            form.parentNode.removeChild(form);
+        }
+    }, 1000);
 }
 
 /**
@@ -235,6 +313,7 @@ export function showAllApplications() {
     // Очищаем состояние фильтра
     state.isDateFilterActive = false;
     state.currentDateFilter = null;
+    state.dateFilteredApplications = null; // Очищаем кэш отфильтрованных заявок
 
     // Очищаем поиск
     state.searchResults = [];
@@ -270,7 +349,7 @@ export function showAllApplications() {
 
     // Загружаем все заявки
     setTimeout(() => {
-        // Сбрасываем кэш и загружаем заново
+        // Сбрасываем кэш для гарантии свежих данных
         state.allApplicationsCache = null;
         state.lastFetchTime = null;
 

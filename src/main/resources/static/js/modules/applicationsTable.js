@@ -138,29 +138,16 @@ export function renderAllApplicationsTable(applications) {
     let html = '';
 
     // Навигация по датам
-    const datesArray = Object.keys(groupedByDate).map(date => ({
-        date,
-        count: groupedByDate[date].length
-    }));
-
-    // Показываем радио-прокрутку при большом количестве дней
-    if (datesArray.length > 10) {
-        // Используем радио-прокрутку
-        html += `<div id="dateRadioScrollContainer"></div>`;
-        // Сохраняем данные для инициализации
-        state.datesArray = datesArray;
-    } else {
-        // Старая навигация для малого количества дней
-        html += `<div class="date-navigation" id="dateNavigation">`;
-        datesArray.forEach(dateObj => {
-            html += `
-                <span class="date-chip" onclick="scrollToDate('${dateObj.date}')">
-                    ${formatDateForDisplay(dateObj.date)} <span class="badge bg-secondary">${dateObj.count}</span>
-                </span>
-            `;
-        });
-        html += `</div>`;
-    }
+    html += `<div class="date-navigation" id="dateNavigation">`;
+    Object.keys(groupedByDate).forEach(date => {
+        const count = groupedByDate[date].length;
+        html += `
+            <span class="date-chip" onclick="scrollToDate('${date}')">
+                ${formatDateForDisplay(date)} <span class="badge bg-secondary">${count}</span>
+            </span>
+        `;
+    });
+    html += `</div>`;
 
     // Таблица по дням
     Object.keys(groupedByDate).forEach(date => {

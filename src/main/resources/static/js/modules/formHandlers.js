@@ -216,7 +216,8 @@ export function setupAutocomplete() {
         "Нет питания",
         "Проблемы с модемом",
         "Подключен",
-        "Проводной"
+        "Проводной",
+        "Нет информации"
     ];
 
     defaultReasons.forEach(reason => usedReasons.add(reason));

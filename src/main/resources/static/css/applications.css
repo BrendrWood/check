@@ -403,6 +403,10 @@ input[type="radio"]#resolutionNok {
     margin: 1.75rem auto;
 }
 
+.modal-title {
+    color: #495057;
+}
+
 .modal-content-issues {
     border-radius: 10px;
     overflow: hidden;

@@ -361,6 +361,67 @@ public class ApplicationController {
         }
     }
 
+    // POST: Экспорт по дате (новый метод)
+    @PostMapping("/export/by-date")
+    public void exportByDate(@RequestParam String date,
+                             @RequestParam(required = false) String ids,
+                             @RequestParam(required = false) String fileName,
+                             HttpServletResponse response) throws Exception {
+
+        try {
+            List<Application> applications;
+
+            if (ids != null && !ids.trim().isEmpty()) {
+                // Если переданы ID заявок - используем их
+                List<Long> idList = objectMapper.readValue(ids, new TypeReference<List<Long>>() {});
+                applications = applicationRepository.findAllById(idList);
+            } else {
+                // Если ID не переданы - получаем по дате
+                LocalDate parsedDate = LocalDate.parse(date);
+                applications = applicationRepository.findByDate(parsedDate);
+            }
+
+            if (applications.isEmpty()) {
+                response.setContentType("text/plain;charset=UTF-8");
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write("Нет заявок за указанную дату: " + date);
+                return;
+            }
+
+            // Генерируем имя файла
+            String filename;
+            if (fileName != null && !fileName.trim().isEmpty()) {
+                filename = fileName;
+            } else {
+                filename = "applications_" + date.replace("-", "") + ".xlsx";
+            }
+
+            // Используем уникальное имя временного файла
+            String tempFileName = "temp_export_" + System.currentTimeMillis() + ".xlsx";
+
+            // Экспортируем в Excel
+            exelService.exportToExcel(applications, tempFileName);
+
+            // Настраиваем ответ для скачивания
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+
+            // Отправляем файл
+            try (FileInputStream fileIn = new FileInputStream(tempFileName)) {
+                IOUtils.copy(fileIn, response.getOutputStream());
+            }
+
+            // Удаляем временный файл
+            Files.deleteIfExists(Paths.get(tempFileName));
+
+        } catch (Exception e) {
+            response.setContentType("text/plain;charset=UTF-8");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write("Ошибка экспорта: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     // POST: Экспорт кастомного списка заявок
     @PostMapping("/export/custom")
     public void exportCustomApplications(@RequestBody Map<String, Object> request,

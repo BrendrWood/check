@@ -257,34 +257,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }, 5000);
 
-    // 7. Оптимизация отображения дат после загрузки таблицы
-    // Добавляем обработчик для событий загрузки таблицы
-    const allAppsModal = document.getElementById('allApplicationsModal');
-    if (allAppsModal) {
-        allAppsModal.addEventListener('shown.bs.modal', function() {
-            // Ждем завершения анимации и загрузки данных
-            setTimeout(() => {
-                // 8. Инициализация радио-прокрутки дат (если много дней)
-                if (state.datesArray && state.datesArray.length > 10) {
-                    // Динамически импортируем модуль
-                    import('./modules/radioDateScroll.js').then(module => {
-                        const container = document.getElementById('dateRadioScrollContainer');
-                        if (container) {
-                            container.innerHTML = module.createRadioDateScroll(state.datesArray);
-                            module.initRadioDateScroll();
-                        }
-                    }).catch(error => {
-                        console.warn('Модуль radioDateScroll не загружен:', error);
-                        // Если модуль не загрузился, показываем стандартную навигацию
-                        const oldNav = document.getElementById('dateNavigation');
-                        if (oldNav) {
-                            oldNav.style.display = 'block';
-                        }
-                    });
-                }
-            }, 500);
-        });
-    }
-
     console.log('Приложение инициализировано');
 });
