@@ -17,6 +17,15 @@ import { formatDateForDisplay } from './utils.js';
 export async function filterByDate() {
     const dateInput = document.getElementById('dateFilter');
     const selectedDate = dateInput.value;
+    const searchTerm = document.getElementById('searchAllTable').value.trim();
+
+    // Если есть поисковый запрос - используем умную фильтрацию
+    if (searchTerm) {
+        if (typeof window.smartFilter === 'function') {
+            window.smartFilter();
+            return;
+        }
+    }
 
     if (!selectedDate) {
         showMessageInModal(MESSAGES.DATE_REQUIRED, 'warning');
@@ -92,20 +101,21 @@ export async function filterByDate() {
         // 4. Сохраняем отфильтрованные заявки для экспорта
         state.dateFilteredApplications = filteredApplications;
         state.currentDateFilter = selectedDate;
+        state.currentSearchTerm = ''; // Очищаем поисковый запрос
+        state.isDateFilterActive = true;
+        state.isSearchActive = false;
+        state.searchResults = filteredApplications;
 
         // 5. Показываем результаты
         displayDateFilterResults(filteredApplications, selectedDate);
 
-        // 6. Сохраняем как активный фильтр
-        state.isDateFilterActive = true;
-
-        // 7. Показываем кнопку очистки
+        // 6. Показываем кнопку очистки
         const clearBtn = document.getElementById('clearDateFilterBtn');
         if (clearBtn) {
             clearBtn.style.display = 'inline-block';
         }
 
-        // 8. Обновляем статистику
+        // 7. Обновляем статистику
         updateDateFilterStats(filteredApplications.length, selectedDate);
 
     } catch (error) {
@@ -314,6 +324,7 @@ export function showAllApplications() {
     state.isDateFilterActive = false;
     state.currentDateFilter = null;
     state.dateFilteredApplications = null; // Очищаем кэш отфильтрованных заявок
+    state.currentSearchTerm = '';
 
     // Очищаем поиск
     state.searchResults = [];
@@ -376,17 +387,17 @@ export function setupDateFilter() {
         // Обработка нажатия Enter в поле даты
         dateInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
-                filterByDate();
+                // При нажатии Enter вызываем умную фильтрацию
+                if (typeof window.smartFilter === 'function') {
+                    window.smartFilter();
+                }
                 e.preventDefault();
             }
         });
 
-        // Автоматический фильтр при выборе даты из календаря
-        dateInput.addEventListener('change', function() {
-            if (this.value) {
-                filterByDate();
-            }
-        });
+        // УБИРАЕМ автоматический фильтр при выборе даты!
+        // Теперь дата выбирается, но фильтрация не применяется автоматически
+        // Пользователь должен нажать кнопку "Применить"
     }
 }
 

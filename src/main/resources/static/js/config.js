@@ -16,7 +16,12 @@ export const state = {
     isSearchActive: false,
     isDateFilterActive: false,
     currentDateFilter: null,
-    forceRefreshNeeded: false
+    forceRefreshNeeded: false,
+
+    // НОВЫЕ СОСТОЯНИЯ ДЛЯ КОМБИНИРОВАННОЙ ФИЛЬТРАЦИИ
+    currentSearchTerm: '',           // текущий поисковый запрос
+    dateFilteredApplications: null,  // кэш отфильтрованных по дате заявок
+    combinedFilterActive: false      // флаг активного комбинированного фильтра
 };
 
 // Селекторы DOM элементов (для удобства)
@@ -56,6 +61,8 @@ export const SELECTORS = {
     OPEN_ISSUES_TREE_BTN: '#openIssuesTreeBtn',
     OPEN_ALL_APPLICATIONS_BTN: '#openAllApplicationsBtn',
     AUTO_REFRESH_SWITCH: '#autoRefreshSwitch',
+    APPLY_COMBINED_FILTER_BTN: '#applyCombinedFilterBtn',
+    CLEAR_ALL_FILTERS_BTN: '#clearAllFiltersBtn',
 
     // Информационные элементы
     APPLICATIONS_COUNT: '#applicationsCount',
@@ -63,6 +70,7 @@ export const SELECTORS = {
     SELECTED_COUNT: '#selectedCount',
     ALL_TABLE_STATS: '#allTableStats',
     SEARCH_LIST_INFO: '#searchListInfo',
+    COMBINED_FILTER_INFO: '#combinedFilterInfo',
 
     INSTALLATION_DATE: '[name="installationDate"]',
     DATE_FILTER_STATS: '#dateFilterStats',
@@ -100,7 +108,14 @@ export const MESSAGES = {
     COLLAPSE_ALL: 'Все категории свернуты',
     DATE_REQUIRED: 'Выберите дату для фильтрации',
     NO_APPLICATIONS_DATE: (date) => `Нет заявок, отредактированных ${date}`,
-    NO_EXPORT_DATA: 'Нет результатов для экспорта'
+    NO_EXPORT_DATA: 'Нет результатов для экспорта',
+
+    // НОВЫЕ СООБЩЕНИЯ ДЛЯ КОМБИНИРОВАННОЙ ФИЛЬТРАЦИИ
+    COMBINED_FILTER_APPLIED: (searchTerm, dateStr) =>
+        `Применен фильтр: поиск "${searchTerm}" за ${dateStr}`,
+    NO_COMBINED_RESULTS: (searchTerm, dateStr) =>
+        `Нет заявок по запросу "${searchTerm}" за ${dateStr}`,
+    ENTER_SEARCH_OR_DATE: 'Введите поисковый запрос или выберите дату'
 };
 
 // Классы CSS (для динамического добавления/удаления)
@@ -112,7 +127,12 @@ export const CSS_CLASSES = {
     ACTIVE: 'autocomplete-active',
     INVALID: 'is-invalid',
     PHYS_CHECKED: 'phys-checked',
-    CORP_CHECKED: 'corp-checked'
+    CORP_CHECKED: 'corp-checked',
+
+    // НОВЫЕ КЛАССЫ ДЛЯ КОМБИНИРОВАННОЙ ФИЛЬТРАЦИИ
+    COMBINED_RESULT: 'combined-result',
+    ACTIVE_FILTER: 'active-filter',
+    FILTER_BADGE: 'filter-badge'
 };
 
 // Конфигурация дерева нарушений (можно вынести из issuesTree.js если нужно)

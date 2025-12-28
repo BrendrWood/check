@@ -33,7 +33,11 @@ import {
     searchInAllTable,
     searchInList,
     clearSearchResults,
-    setupSearchHandlers
+    setupSearchHandlers,
+    applyCombinedFilter,
+    clearAllFilters,
+    exportCombinedResults,
+    smartFilter
 } from './modules/search.js';
 import {
     setupFormHandlers,
@@ -90,6 +94,12 @@ window.searchIssues = searchIssues;
 window.clearIssuesSearch = clearIssuesSearch;
 window.loadApplication = loadApplication;
 window.renderAllApplicationsTable = renderAllApplicationsTable;
+
+// НОВЫЕ ФУНКЦИИ ДЛЯ КОМБИНИРОВАННОЙ ФИЛЬТРАЦИИ
+window.applyCombinedFilter = applyCombinedFilter;
+window.clearAllFilters = clearAllFilters;
+window.exportCombinedResults = exportCombinedResults;
+window.smartFilter = smartFilter;
 
 // ============================================
 // ФУНКЦИИ, КОТОРЫЕ НУЖНО ОСТАВИТЬ ЗДЕСЬ
@@ -169,7 +179,7 @@ function scrollToDate(date) {
 
 function showAllApplications() {
     // Очищаем поиск
-    clearSearchResults();
+    clearAllFilters();
 
     // Очищаем фильтр даты
     const dateInput = document.getElementById('dateFilter');
@@ -203,11 +213,65 @@ function showAllApplications() {
 }
 
 // ============================================
+// ДОПОЛНИТЕЛЬНЫЕ ОБРАБОТЧИКИ ДЛЯ КНОПОК
+// ============================================
+
+/**
+ * Универсальный обработчик для кнопок фильтрации
+ */
+function setupUniversalButtonHandlers() {
+    // Обработчик для кнопки "Применить фильтры"
+    document.addEventListener('click', function(e) {
+        const button = e.target.closest('button');
+        if (!button) return;
+
+        // Проверяем текст кнопки или иконку
+        const buttonText = button.textContent || '';
+        const buttonIcon = button.querySelector('i');
+        const iconClass = buttonIcon ? buttonIcon.className : '';
+
+        // Кнопка "Применить" или "Применить фильтры"
+        if (buttonText.includes('Применить') ||
+            (buttonIcon && iconClass.includes('bi-funnel'))) {
+            e.preventDefault();
+            console.log('Кнопка "Применить" нажата через универсальный обработчик');
+
+            // Используем умную фильтрацию
+            if (typeof window.smartFilter === 'function') {
+                console.log('Вызываем window.smartFilter');
+                window.smartFilter();
+            } else if (typeof smartFilter === 'function') {
+                console.log('Вызываем smartFilter');
+                smartFilter();
+            } else {
+                console.error('Функция smartFilter не найдена');
+                alert('Функция фильтрации не загружена. Пожалуйста, обновите страницу.');
+            }
+        }
+
+        // Кнопка "Сбросить все"
+        if (buttonText.includes('Сбросить все') ||
+            (buttonIcon && iconClass.includes('bi-x-circle') && !buttonText.includes('Очистить поиск'))) {
+            e.preventDefault();
+            console.log('Кнопка "Сбросить все" нажата');
+
+            if (typeof window.clearAllFilters === 'function') {
+                window.clearAllFilters();
+            } else if (typeof clearAllFilters === 'function') {
+                clearAllFilters();
+            }
+        }
+    });
+}
+
+// ============================================
 // ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ
 // ============================================
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Инициализация приложения...');
+    console.log('smartFilter доступна?', typeof smartFilter);
+    console.log('smartFilter в window?', typeof window.smartFilter);
 
     // 1. Инициализация основных обработчиков
     setupFormHandlers();
@@ -216,10 +280,13 @@ document.addEventListener('DOMContentLoaded', function() {
     setupIssuesTreeHandlers();
     setupApplicationsTableHandlers();
 
-    // 2. Загрузка начальных данных
+    // 2. НОВЫЕ ОБРАБОТЧИКИ ДЛЯ КОМБИНИРОВАННОЙ ФИЛЬТРАЦИИ
+    setupUniversalButtonHandlers();
+
+    // 3. Загрузка начальных данных
     loadRecentApplications();
 
-    // 3. Установка текущей даты по умолчанию
+    // 4. Установка текущей даты по умолчанию
     const installationDateInput = document.querySelector('[name="installationDate"]');
     if (installationDateInput && !installationDateInput.value) {
         const today = new Date();
@@ -227,7 +294,7 @@ document.addEventListener('DOMContentLoaded', function() {
         installationDateInput.value = formattedDate;
     }
 
-    // 4. Настройка автообновления
+    // 5. Настройка автообновления
     const switchElement = document.getElementById('autoRefreshSwitch');
     if (switchElement) {
         switchElement.addEventListener('change', function() {
@@ -245,10 +312,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 5. Инициализация автодополнения
+    // 6. Инициализация автодополнения
     setupAutocomplete();
 
-    // 6. Закрытие уведомлений через 5 секунд
+    // 7. Закрытие уведомлений через 5 секунд
     setTimeout(() => {
         const alerts = document.querySelectorAll('.alert');
         alerts.forEach(alert => {
@@ -256,6 +323,21 @@ document.addEventListener('DOMContentLoaded', function() {
             bsAlert.close();
         });
     }, 5000);
+
+    // 8. ДОПОЛНИТЕЛЬНАЯ ПРОВЕРКА: Обновляем onclick атрибуты кнопок
+    setTimeout(() => {
+        const applyButtons = document.querySelectorAll('button');
+        applyButtons.forEach(button => {
+            if (button.textContent.includes('Применить') ||
+                (button.querySelector('i') && button.querySelector('i').classList.contains('bi-funnel'))) {
+                button.setAttribute('onclick', 'if (window.smartFilter) window.smartFilter(); else console.error("smartFilter не найдена")');
+                console.log('Кнопка "Применить" обновлена на smartFilter');
+            }
+            if (button.textContent.includes('Сбросить все')) {
+                button.setAttribute('onclick', 'if (window.clearAllFilters) window.clearAllFilters();');
+            }
+        });
+    }, 1000);
 
     console.log('Приложение инициализировано');
 });

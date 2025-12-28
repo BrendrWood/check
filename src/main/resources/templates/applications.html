@@ -239,10 +239,7 @@
         <!-- Правая часть - список -->
         <div class="col-lg-4 col-md-5">
             <div class="sidebar">
-                <h5 class="mb-2" style="font-size: 1.1rem;">
-                    <i class="bi bi-list-check"></i> Последние заявки
-                    <span class="badge bg-secondary" id="applicationsCount">0</span>
-                </h5>
+
 
                 <!-- Управление заявками -->
                 <div class="mb-3">
@@ -277,22 +274,7 @@
                     </div>
                 </div>
 
-                <!-- ПОИСК В СПИСКЕ ЗАЯВОК -->
-                <div class="search-list-container">
-                    <div class="input-group input-group-sm mb-2">
-                        <input type="text" class="form-control" id="searchListInput"
-                               placeholder="Поиск по номеру заявки...">
-                        <button class="btn btn-outline-secondary" type="button" onclick="searchInList()">
-                            <i class="bi bi-search"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-secondary" onclick="showAllApplications()">
-                            <i class="bi bi-x-circle"></i> Показать все
-                        </button>
-                    </div>
-                    <div id="searchListInfo" class="search-list-info" style="display: none;">
-                        Найдена 1 заявка. <a href="#" onclick="clearListSearch()" class="text-primary">Показать все</a>
-                    </div>
-                </div>
+                <h6 style="font-size: 0.95rem;">Последние обработанные заявки</h6>
 
                 <!-- Список последних заявок -->
                 <div class="applications-list-container" id="applicationsList">
@@ -400,24 +382,20 @@
                     <div class="input-group" style="flex-grow: 1;">
                         <input type="text" class="form-control" id="searchAllTable"
                                placeholder="Поиск по номеру, инженеру, комментариям...">
-                        <button class="btn btn-outline-success" type="button" onclick="searchInAllTable()">
-                            <i class="bi bi-search"></i> Поиск
-                        </button>
-                        <button class="btn btn-outline-secondary" type="button" onclick="clearSearchResults()"
-                                title="Очистить поиск">
+                        <button class="btn btn-outline-secondary" type="button" onclick="clearAllFilters()"
+                                title="Очистить все фильтры">
                             <i class="bi bi-x-circle"></i>
                         </button>
                     </div>
-                    <div class="input-group" style="width: 320px;">
+                    <div class="input-group" style="width: 280px;">
                         <input type="date" class="form-control" id="dateFilter"
                                placeholder="Дата редактирования">
-                        <button class="btn btn-outline-primary" type="button" onclick="filterByDate()"
-                                title="Показать заявки за эту дату">
-                            <i class="bi bi-calendar-check"></i> Фильтр
-                        </button>
-                        <button class="btn btn-outline-danger" type="button" onclick="clearDateFilter()"
-                                title="Очистить фильтр даты" id="clearDateFilterBtn" style="display: none;">
-                            <i class="bi bi-x-circle"></i>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <!-- ОДНА УМНАЯ КНОПКА -->
+                        <button class="btn btn-outline-primary" type="button" onclick="smartFilter()"
+                                title="Применить фильтры (автоматически определяет тип)">
+                            <i class="bi bi-funnel"></i> Применить
                         </button>
                     </div>
                 </div>
