@@ -88,7 +88,7 @@ body {
 
 .form-check-label {
     cursor: pointer;
-    padding-left: 0;
+    padding-left: 12px;
     width: 100%;
     display: block;
     margin-bottom: 0;
@@ -886,6 +886,35 @@ input[type="radio"]#resolutionNok {
 
 .card-body {
     padding: 0.75rem 1rem;
+}
+
+/* Стили для мастер-чеков в одну строку */
+.card-body .d-flex .form-check {
+    margin: 0;
+    padding: 0 15px;
+    flex: 1;
+    display: grid;
+    align-content: space-evenly;
+}
+
+.card-body .d-flex .form-check:not(:last-child) {
+    border-right: 1px solid #dee2e6;
+}
+
+.card-body .d-flex .form-check:first-child {
+    padding-left: 10px;
+}
+
+.card-body .d-flex .form-check:last-child {
+    padding-right: 10px;
+}
+
+.card-body .d-flex .form-check .form-check-input {
+    margin-left: 0;
+}
+
+.card-body .d-flex .form-check .form-check-label {
+    white-space: nowrap;
 }
 
 /* Стили для полей формы в модальном окне */

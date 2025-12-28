@@ -65,7 +65,11 @@ export const SELECTORS = {
     SEARCH_LIST_INFO: '#searchListInfo',
 
     INSTALLATION_DATE: '[name="installationDate"]',
-    DATE_FILTER_STATS: '#dateFilterStats'
+    DATE_FILTER_STATS: '#dateFilterStats',
+
+    //Мастер-чек-боксы
+    PHYS_CHECK: '#physCheck',
+    CORP_CHECK: '#corpCheck'
 };
 
 // API endpoints
@@ -106,7 +110,9 @@ export const CSS_CLASSES = {
     HIGHLIGHTED: 'highlighted',
     EXPANDED: 'expanded',
     ACTIVE: 'autocomplete-active',
-    INVALID: 'is-invalid'
+    INVALID: 'is-invalid',
+    PHYS_CHECKED: 'phys-checked',
+    CORP_CHECKED: 'corp-checked'
 };
 
 // Конфигурация дерева нарушений (можно вынести из issuesTree.js если нужно)

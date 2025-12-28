@@ -25,6 +25,70 @@ export function setupFormHandlers() {
         });
     }
 
+    // Физ-чекбокс
+    const physCheck = document.getElementById('physCheck');
+    if (physCheck) {
+        physCheck.addEventListener('click', function() {
+            // Чекбоксы для физ-чека
+            const physCheckboxes = [
+                'sensorsOk', 'label', 'avr', 'systemPhoto',
+                'floorPlan', 'secondForm', 'docs', 'roadMap', 'publicName'
+            ];
+
+            physCheckboxes.forEach(name => {
+                const checkbox = document.querySelector(`[name="${name}"]`);
+                if (checkbox) {
+                    checkbox.checked = this.checked;
+                    checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            });
+
+            // Автоматически выбираем нарушение "физ. лицо" если включено
+            if (this.checked && window.state && window.state.selectedIssues) {
+                const physIssueText = "физ. лицо";
+                if (!window.state.selectedIssues.has(physIssueText)) {
+                    window.state.selectedIssues.add(physIssueText);
+                    // Обновляем UI если дерево нарушений инициализировано
+                    if (typeof updateSelectedIssuesUI === 'function') {
+                        updateSelectedIssuesUI();
+                    }
+                }
+            }
+        });
+    }
+
+    // Юр-чекбокс
+    const corpCheck = document.getElementById('corpCheck');
+    if (corpCheck) {
+        corpCheck.addEventListener('click', function() {
+            // Чекбоксы для юр-чека
+            const corpCheckboxes = [
+                'sensorsOk', 'label', 'avr', 'systemPhoto',
+                'floorPlan', 'secondForm', 'roadMap', 'publicName'
+            ];
+
+            corpCheckboxes.forEach(name => {
+                const checkbox = document.querySelector(`[name="${name}"]`);
+                if (checkbox) {
+                    checkbox.checked = this.checked;
+                    checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            });
+
+            // Автоматически выбираем нарушение "юр. лицо" если включено
+            if (this.checked && window.state && window.state.selectedIssues) {
+                const corpIssueText = "юр. лицо";
+                if (!window.state.selectedIssues.has(corpIssueText)) {
+                    window.state.selectedIssues.add(corpIssueText);
+                    // Обновляем UI если дерево нарушений инициализировано
+                    if (typeof updateSelectedIssuesUI === 'function') {
+                        updateSelectedIssuesUI();
+                    }
+                }
+            }
+        });
+    }
+
     // Обработка кликов по чекбоксам
     const checkboxes = document.querySelectorAll('.checkbox-group .form-check');
     checkboxes.forEach(checkbox => {
@@ -184,6 +248,37 @@ export function fillFormWithApplication(app) {
         document.getElementById('resolutionOk').checked = true;
     } else {
         document.getElementById('resolutionNok').checked = true;
+    }
+
+    // Новые мастер-чекбоксы
+    const physCheck = document.getElementById('physCheck');
+    if (physCheck) {
+        // Проверяем, отмечены ли все чекбоксы для физ-чека
+        const physCheckboxes = [
+            'sensorsOk', 'label', 'avr', 'systemPhoto',
+            'floorPlan', 'secondForm', 'docs', 'roadMap', 'publicName'
+        ];
+
+        const allChecked = physCheckboxes.every(name => {
+            const checkbox = document.querySelector(`[name="${name}"]`);
+            return checkbox && checkbox.checked;
+        });
+        physCheck.checked = allChecked;
+    }
+
+    const corpCheck = document.getElementById('corpCheck');
+    if (corpCheck) {
+        // Проверяем, отмечены ли все чекбоксы для юр-чека
+        const corpCheckboxes = [
+            'sensorsOk', 'label', 'avr', 'systemPhoto',
+            'floorPlan', 'secondForm', 'roadMap', 'publicName'
+        ];
+
+        const allChecked = corpCheckboxes.every(name => {
+            const checkbox = document.querySelector(`[name="${name}"]`);
+            return checkbox && checkbox.checked;
+        });
+        corpCheck.checked = allChecked;
     }
 }
 
