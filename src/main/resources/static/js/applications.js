@@ -1,6 +1,6 @@
 // ============================================
 // ОСНОВНОЙ ФАЙЛ ПРИЛОЖЕНИЯ
-// Инициализация и координация модулей
+// Инициализация и координация всех модулей приложения
 // ============================================
 
 // Импорт модулей
@@ -62,12 +62,13 @@ import {
     formatDateForDisplay,
     escapeRegExp
 } from './modules/utils.js';
+import { initRadioDateScroll, updateChipOpacity } from './modules/radioDateScroll.js';
 
 // ============================================
-// ГЛОБАЛЬНЫЙ ЭКСПОРТ ФУНКЦИЙ (для вызова из HTML)
+// ГЛОБАЛЬНЫЙ ЭКСПОРТ ФУНКЦИЙ
+// Функции, доступные для вызова из HTML атрибутов
 // ============================================
 
-// Экспортируем функции, которые вызываются из onclick атрибутов
 window.copyCommentsToClipboard = copyCommentsToClipboard;
 window.exportSingle = exportSingle;
 window.exportAllToExcel = exportAllToExcel;
@@ -94,17 +95,93 @@ window.searchIssues = searchIssues;
 window.clearIssuesSearch = clearIssuesSearch;
 window.loadApplication = loadApplication;
 window.renderAllApplicationsTable = renderAllApplicationsTable;
+window.initRadioDateScroll = initRadioDateScroll;
+window.updateChipOpacity = updateChipOpacity;
 
-// НОВЫЕ ФУНКЦИИ ДЛЯ КОМБИНИРОВАННОЙ ФИЛЬТРАЦИИ
+// Новая функция для переключения дат по клику на чип
+window.toggleDateByChip = toggleDateByChip;
+
+// Функции комбинированной фильтрации
 window.applyCombinedFilter = applyCombinedFilter;
 window.clearAllFilters = clearAllFilters;
 window.exportCombinedResults = exportCombinedResults;
 window.smartFilter = smartFilter;
 
 // ============================================
-// ФУНКЦИИ, КОТОРЫЕ НУЖНО ОСТАВИТЬ ЗДЕСЬ
+// ФУНКЦИИ ПРИЛОЖЕНИЯ
 // ============================================
 
+/**
+ * Переключает отображение группы заявок по дате по клику на чип
+ * @param {string} date - Дата в формате YYYY-MM-DD
+ */
+function toggleDateByChip(date) {
+    const chip = document.querySelector(`.date-radio-chip[data-date="${date}"]`);
+    if (chip) {
+        const content = document.getElementById(`content-${date}`);
+        const header = document.getElementById(`date-${date}`);
+
+        if (!content || !header) return;
+
+        // Проверяем, открыта ли уже эта группа
+        const isCurrentlyExpanded = content.style.display !== 'none';
+
+        // Если группа уже открыта - сворачиваем ее
+        if (isCurrentlyExpanded) {
+            content.style.display = 'none';
+            header.classList.remove('expanded');
+            const icon = header.querySelector('.collapse-icon');
+            if (icon) {
+                icon.classList.remove('bi-chevron-down');
+                icon.classList.add('bi-chevron-right');
+            }
+        } else {
+            // Если группа закрыта - открываем и центрируем
+            // Убираем активный класс у всех чипов
+            document.querySelectorAll('.date-radio-chip').forEach(c => {
+                c.classList.remove('active');
+            });
+            // Добавляем активный класс выбранному
+            chip.classList.add('active');
+
+            // Центрируем чип
+            const container = document.getElementById('dateRadioScroll');
+            if (container && chip) {
+                const containerWidth = container.clientWidth;
+                const elementLeft = chip.offsetLeft;
+                const elementWidth = chip.clientWidth;
+                const scrollLeft = elementLeft - (containerWidth / 2) + (elementWidth / 2);
+
+                container.scrollTo({
+                    left: scrollLeft,
+                    behavior: 'smooth'
+                });
+            }
+
+            // Прокручиваем к группе заявок и открываем её
+            setTimeout(() => {
+                header.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                content.style.display = 'block';
+                header.classList.add('expanded');
+                const icon = header.querySelector('.collapse-icon');
+                if (icon) {
+                    icon.classList.remove('bi-chevron-right');
+                    icon.classList.add('bi-chevron-down');
+                }
+
+                // Обновляем прозрачность после скролла
+                if (typeof window.updateChipOpacity === 'function') {
+                    setTimeout(() => window.updateChipOpacity(), 300);
+                }
+            }, 100);
+        }
+    }
+}
+
+/**
+ * Загружает заявку в форму по клику на элемент списка
+ * @param {HTMLElement} element - DOM элемент заявки
+ */
 function loadApplication(element) {
     const number = element.getAttribute('data-number');
     if (number && number !== 'null' && number !== '') {
@@ -116,6 +193,10 @@ function loadApplication(element) {
     }
 }
 
+/**
+ * Очищает результаты поиска в списке заявок
+ * Восстанавливает отображение всех заявок
+ */
 function clearListSearch() {
     const searchInput = document.getElementById('searchListInput');
     const appItems = document.querySelectorAll('.application-item');
@@ -133,24 +214,43 @@ function clearListSearch() {
     searchInput.focus();
 }
 
+/**
+ * Переключает отображение группы заявок по дате
+ * Теперь работает как toggle: если открыто - закрывает, если закрыто - открывает
+ * @param {string} date - Дата в формате YYYY-MM-DD
+ * @param {boolean} forceExpand - Принудительное разворачивание
+ */
 function toggleDateGroup(date, forceExpand = false) {
     const content = document.getElementById(`content-${date}`);
     const header = document.getElementById(`date-${date}`);
     const icon = header.querySelector('.collapse-icon');
 
-    if (content.style.display === 'none' || forceExpand) {
+    // Если forceExpand не задан, используем toggle логику
+    if (forceExpand) {
         content.style.display = 'block';
         header.classList.add('expanded');
         icon.classList.remove('bi-chevron-right');
         icon.classList.add('bi-chevron-down');
     } else {
-        content.style.display = 'none';
-        header.classList.remove('expanded');
-        icon.classList.remove('bi-chevron-down');
-        icon.classList.add('bi-chevron-right');
+        // Toggle логика
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            header.classList.add('expanded');
+            icon.classList.remove('bi-chevron-right');
+            icon.classList.add('bi-chevron-down');
+        } else {
+            content.style.display = 'none';
+            header.classList.remove('expanded');
+            icon.classList.remove('bi-chevron-down');
+            icon.classList.add('bi-chevron-right');
+        }
     }
 }
 
+/**
+ * Переключает отображение группы заявок в результатах поиска
+ * @param {string} date - Дата в форматре YYYY-MM-DD
+ */
 function toggleSearchDateGroup(date) {
     const content = document.getElementById(`search-content-${date}`);
     const header = document.getElementById(`search-date-${date}`);
@@ -169,31 +269,68 @@ function toggleSearchDateGroup(date) {
     }
 }
 
+/**
+ * Прокручивает страницу к группе заявок по указанной дате и открывает её
+ * @param {string} date - Дата в формате YYYY-MM-DD
+ */
 function scrollToDate(date) {
+    // Прокручиваем радио-кнопку к выбранной дате
+    const chip = document.querySelector(`.date-radio-chip[data-date="${date}"]`);
+    if (chip) {
+        // Удаляем активный класс у всех чипов
+        document.querySelectorAll('.date-radio-chip').forEach(c => {
+            c.classList.remove('active');
+        });
+        // Добавляем активный класс выбранному
+        chip.classList.add('active');
+
+        // Центрируем элемент
+        const container = document.getElementById('dateRadioScroll');
+        if (container && chip) {
+            const containerWidth = container.clientWidth;
+            const elementLeft = chip.offsetLeft;
+            const elementWidth = chip.clientWidth;
+            const scrollLeft = elementLeft - (containerWidth / 2) + (elementWidth / 2);
+
+            container.scrollTo({
+                left: scrollLeft,
+                behavior: 'smooth'
+            });
+
+            // Обновляем прозрачность после скролла
+            setTimeout(() => {
+                if (typeof window.updateChipOpacity === 'function') {
+                    window.updateChipOpacity();
+                }
+            }, 300);
+        }
+    }
+
+    // Прокручиваем страницу к группе заявок и открываем её
     const element = document.getElementById(`date-${date}`);
     if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        window.toggleDateGroup(date, true);
+        window.toggleDateGroup(date, true);  // Всегда открываем при скролле
     }
 }
 
+/**
+ * Сбрасывает все фильтры и показывает полный список заявок
+ * Очищает состояние поиска и загружает все заявки заново
+ */
 function showAllApplications() {
-    // Очищаем поиск
     clearAllFilters();
 
-    // Очищаем фильтр даты
     const dateInput = document.getElementById('dateFilter');
     if (dateInput) {
         dateInput.value = '';
     }
 
-    // Сбрасываем состояние
     state.isSearchActive = false;
     state.isDateFilterActive = false;
     state.currentDateFilter = null;
     state.searchResults = [];
 
-    // Показываем индикатор загрузки
     const container = document.getElementById('allApplicationsTableContainer');
     if (container) {
         container.innerHTML = `
@@ -206,37 +343,33 @@ function showAllApplications() {
         `;
     }
 
-    // Загружаем все заявки
     setTimeout(() => {
         loadAllApplicationsTable();
     }, 100);
 }
 
 // ============================================
-// ДОПОЛНИТЕЛЬНЫЕ ОБРАБОТЧИКИ ДЛЯ КНОПОК
+// ОБРАБОТЧИКИ КНОПОК ФИЛЬТРАЦИИ
 // ============================================
 
 /**
- * Универсальный обработчик для кнопок фильтрации
+ * Настраивает универсальные обработчики для кнопок фильтрации
+ * Обрабатывает кнопки "Применить" и "Сбросить все" по всему приложению
  */
 function setupUniversalButtonHandlers() {
-    // Обработчик для кнопки "Применить фильтры"
     document.addEventListener('click', function(e) {
         const button = e.target.closest('button');
         if (!button) return;
 
-        // Проверяем текст кнопки или иконку
         const buttonText = button.textContent || '';
         const buttonIcon = button.querySelector('i');
         const iconClass = buttonIcon ? buttonIcon.className : '';
 
-        // Кнопка "Применить" или "Применить фильтры"
         if (buttonText.includes('Применить') ||
             (buttonIcon && iconClass.includes('bi-funnel'))) {
             e.preventDefault();
             console.log('Кнопка "Применить" нажата через универсальный обработчик');
 
-            // Используем умную фильтрацию
             if (typeof window.smartFilter === 'function') {
                 console.log('Вызываем window.smartFilter');
                 window.smartFilter();
@@ -249,7 +382,6 @@ function setupUniversalButtonHandlers() {
             }
         }
 
-        // Кнопка "Сбросить все"
         if (buttonText.includes('Сбросить все') ||
             (buttonIcon && iconClass.includes('bi-x-circle') && !buttonText.includes('Очистить поиск'))) {
             e.preventDefault();
@@ -268,25 +400,29 @@ function setupUniversalButtonHandlers() {
 // ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ
 // ============================================
 
+/**
+ * Основная функция инициализации приложения
+ * Выполняется после полной загрузки DOM дерева
+ */
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Инициализация приложения...');
     console.log('smartFilter доступна?', typeof smartFilter);
     console.log('smartFilter в window?', typeof window.smartFilter);
 
-    // 1. Инициализация основных обработчиков
+    // Инициализация основных обработчиков
     setupFormHandlers();
     setupSearchHandlers();
     setupDateFilter();
     setupIssuesTreeHandlers();
     setupApplicationsTableHandlers();
 
-    // 2. НОВЫЕ ОБРАБОТЧИКИ ДЛЯ КОМБИНИРОВАННОЙ ФИЛЬТРАЦИИ
+    // Настройка обработчиков для комбинированной фильтрации
     setupUniversalButtonHandlers();
 
-    // 3. Загрузка начальных данных
+    // Загрузка начальных данных
     loadRecentApplications();
 
-    // 4. Установка текущей даты по умолчанию
+    // Установка текущей даты по умолчанию в поле даты монтажа
     const installationDateInput = document.querySelector('[name="installationDate"]');
     if (installationDateInput && !installationDateInput.value) {
         const today = new Date();
@@ -294,7 +430,7 @@ document.addEventListener('DOMContentLoaded', function() {
         installationDateInput.value = formattedDate;
     }
 
-    // 5. Настройка автообновления
+    // Настройка автоматического обновления списка заявок
     const switchElement = document.getElementById('autoRefreshSwitch');
     if (switchElement) {
         switchElement.addEventListener('change', function() {
@@ -302,7 +438,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 state.autoRefreshInterval = setInterval(() => {
                     loadRecentApplications();
                     showMessage('Список обновлен', 'info');
-                }, 30000); // 30 секунд
+                }, 30000);
             } else {
                 if (state.autoRefreshInterval) {
                     clearInterval(state.autoRefreshInterval);
@@ -312,10 +448,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 6. Инициализация автодополнения
+    // Инициализация автодополнения для поля причины проблем с интернетом
     setupAutocomplete();
 
-    // 7. Закрытие уведомлений через 5 секунд
+    // Автоматическое закрытие уведомлений через 5 секунд
     setTimeout(() => {
         const alerts = document.querySelectorAll('.alert');
         alerts.forEach(alert => {
@@ -324,7 +460,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }, 5000);
 
-    // 8. ДОПОЛНИТЕЛЬНАЯ ПРОВЕРКА: Обновляем onclick атрибуты кнопок
+    // Обновление onclick атрибутов кнопок для совместимости
     setTimeout(() => {
         const applyButtons = document.querySelectorAll('button');
         applyButtons.forEach(button => {

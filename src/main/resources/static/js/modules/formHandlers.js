@@ -1,5 +1,6 @@
 // ============================================
 // МОДУЛЬ ОБРАБОТЧИКОВ ФОРМ И ПОЛЕЙ
+// Управление элементами формы и их взаимодействием
 // ============================================
 
 import { state, SELECTORS, CSS_CLASSES } from '../config.js';
@@ -10,10 +11,10 @@ import { showCopyNotification, showTempMessage } from './ui.js';
 // ============================================
 
 /**
- * Настройка обработчиков формы
+ * Настраивает обработчики событий для всех элементов формы
+ * Обрабатывает мастер-чекбоксы, радиокнопки и клики по элементам
  */
 export function setupFormHandlers() {
-    // Мастер-чекбокс
     const masterCheck = document.getElementById('masterCheck');
     if (masterCheck) {
         masterCheck.addEventListener('click', function() {
@@ -25,11 +26,9 @@ export function setupFormHandlers() {
         });
     }
 
-    // Физ-чекбокс
     const physCheck = document.getElementById('physCheck');
     if (physCheck) {
         physCheck.addEventListener('click', function() {
-            // Чекбоксы для физ-чека
             const physCheckboxes = [
                 'sensorsOk', 'label', 'avr', 'systemPhoto',
                 'floorPlan', 'secondForm', 'docs', 'roadMap', 'publicName'
@@ -43,12 +42,10 @@ export function setupFormHandlers() {
                 }
             });
 
-            // Автоматически выбираем нарушение "физ. лицо" если включено
             if (this.checked && window.state && window.state.selectedIssues) {
                 const physIssueText = "физ. лицо";
                 if (!window.state.selectedIssues.has(physIssueText)) {
                     window.state.selectedIssues.add(physIssueText);
-                    // Обновляем UI если дерево нарушений инициализировано
                     if (typeof updateSelectedIssuesUI === 'function') {
                         updateSelectedIssuesUI();
                     }
@@ -57,11 +54,9 @@ export function setupFormHandlers() {
         });
     }
 
-    // Юр-чекбокс
     const corpCheck = document.getElementById('corpCheck');
     if (corpCheck) {
         corpCheck.addEventListener('click', function() {
-            // Чекбоксы для юр-чека
             const corpCheckboxes = [
                 'sensorsOk', 'label', 'avr', 'systemPhoto',
                 'floorPlan', 'secondForm', 'roadMap', 'publicName'
@@ -75,12 +70,10 @@ export function setupFormHandlers() {
                 }
             });
 
-            // Автоматически выбираем нарушение "юр. лицо" если включено
             if (this.checked && window.state && window.state.selectedIssues) {
                 const corpIssueText = "юр. лицо";
                 if (!window.state.selectedIssues.has(corpIssueText)) {
                     window.state.selectedIssues.add(corpIssueText);
-                    // Обновляем UI если дерево нарушений инициализировано
                     if (typeof updateSelectedIssuesUI === 'function') {
                         updateSelectedIssuesUI();
                     }
@@ -89,7 +82,6 @@ export function setupFormHandlers() {
         });
     }
 
-    // Обработка кликов по чекбоксам
     const checkboxes = document.querySelectorAll('.checkbox-group .form-check');
     checkboxes.forEach(checkbox => {
         const label = checkbox.querySelector('.form-check-label');
@@ -109,7 +101,6 @@ export function setupFormHandlers() {
         }
     });
 
-    // Обработка кликов по радиокнопкам резолюции
     const radioLabels = document.querySelectorAll('[for^="resolution"]');
     radioLabels.forEach(label => {
         label.addEventListener('click', function(e) {
@@ -122,7 +113,6 @@ export function setupFormHandlers() {
         });
     });
 
-    // Обработчик для кнопки копирования комментариев
     const copyButton = document.getElementById('copyCommentsBtn');
     if (copyButton) {
         copyButton.addEventListener('mouseenter', function() {
@@ -142,7 +132,8 @@ export function setupFormHandlers() {
 }
 
 /**
- * Копирование комментариев в буфер обмена
+ * Копирует текст комментариев в буфер обмена
+ * Использует современный Clipboard API с fallback для старых браузеров
  */
 export function copyCommentsToClipboard() {
     const commentsField = document.getElementById('commentsField');
@@ -155,20 +146,16 @@ export function copyCommentsToClipboard() {
         return;
     }
 
-    // Используем современный Clipboard API
     navigator.clipboard.writeText(comments)
         .then(() => {
-            // Успешное копирование
             showCopyNotification('Комментарии скопированы в буфер обмена');
 
-            // Временно меняем текст кнопки
             const copyButton = document.getElementById('copyCommentsBtn');
             if (copyButton) {
                 const originalText = copyButton.innerHTML;
                 copyButton.innerHTML = '<i class="bi bi-check-circle"></i> Скопировано!';
                 copyButton.disabled = true;
 
-                // Восстанавливаем кнопку через 2 секунды
                 setTimeout(() => {
                     copyButton.innerHTML = originalText;
                     copyButton.disabled = false;
@@ -176,10 +163,8 @@ export function copyCommentsToClipboard() {
             }
         })
         .catch(err => {
-            // Fallback для старых браузеров
             console.error('Ошибка копирования: ', err);
 
-            // Используем старый метод с textarea
             const textArea = document.createElement('textarea');
             textArea.value = comments;
             document.body.appendChild(textArea);
@@ -201,12 +186,13 @@ export function copyCommentsToClipboard() {
 }
 
 /**
- * Заполнить форму данными заявки
+ * Заполняет форму данными из объекта заявки
+ * Обновляет все поля формы, чекбоксы и радиокнопки
+ * @param {Object} app - Объект заявки
  */
 export function fillFormWithApplication(app) {
     if (!app) return;
 
-    // Основные поля
     document.getElementById('appId').value = app.id || '';
     document.getElementById('appNumberField').value = app.applicationNumber || '';
 
@@ -229,7 +215,6 @@ export function fillFormWithApplication(app) {
 
     document.getElementById('commentsField').value = app.comments || '';
 
-    // Чекбоксы
     const checkboxes = [
         'mpkInstalled', 'highCeiling', 'sensorConnectLevel', 'animals',
         'nightMode', 'sensorsOk', 'label', 'avr', 'systemPhoto',
@@ -243,17 +228,14 @@ export function fillFormWithApplication(app) {
         }
     });
 
-    // Радиокнопки резолюции
     if (app.resolution === true || app.resolution === 'true') {
         document.getElementById('resolutionOk').checked = true;
     } else {
         document.getElementById('resolutionNok').checked = true;
     }
 
-    // Новые мастер-чекбоксы
     const physCheck = document.getElementById('physCheck');
     if (physCheck) {
-        // Проверяем, отмечены ли все чекбоксы для физ-чека
         const physCheckboxes = [
             'sensorsOk', 'label', 'avr', 'systemPhoto',
             'floorPlan', 'secondForm', 'docs', 'roadMap', 'publicName'
@@ -268,7 +250,6 @@ export function fillFormWithApplication(app) {
 
     const corpCheck = document.getElementById('corpCheck');
     if (corpCheck) {
-        // Проверяем, отмечены ли все чекбоксы для юр-чека
         const corpCheckboxes = [
             'sensorsOk', 'label', 'avr', 'systemPhoto',
             'floorPlan', 'secondForm', 'roadMap', 'publicName'
@@ -283,7 +264,8 @@ export function fillFormWithApplication(app) {
 }
 
 /**
- * Настройка автодополнения для поля "Причина проблем с интернетом"
+ * Настраивает автодополнение для поля "Причина проблем с интернетом"
+ * Использует историю ввода и предопределенные варианты
  */
 export function setupAutocomplete() {
     const input = document.getElementById('internetReason');
@@ -317,7 +299,6 @@ export function setupAutocomplete() {
 
     defaultReasons.forEach(reason => usedReasons.add(reason));
 
-    // Обработчик ввода текста
     input.addEventListener('input', function(e) {
         const value = this.value.toLowerCase();
         closeAllLists();
@@ -326,11 +307,9 @@ export function setupAutocomplete() {
 
         autocompleteContainer.innerHTML = '';
 
-        // Фильтруем и сортируем варианты
         const filteredReasons = Array.from(usedReasons)
             .filter(reason => reason.toLowerCase().includes(value))
             .sort((a, b) => {
-                // Сначала показываем варианты, которые начинаются с искомого текста
                 const aStartsWith = a.toLowerCase().startsWith(value);
                 const bStartsWith = b.toLowerCase().startsWith(value);
                 if (aStartsWith && !bStartsWith) return -1;
@@ -338,7 +317,6 @@ export function setupAutocomplete() {
                 return a.localeCompare(b);
             });
 
-        // Ограничиваем количество отображаемых вариантов
         const displayLimit = 5;
         const displayReasons = filteredReasons.slice(0, displayLimit);
 
@@ -349,7 +327,6 @@ export function setupAutocomplete() {
         displayReasons.forEach(reason => {
             const div = document.createElement('div');
 
-            // Подсветка найденного текста
             const regex = new RegExp(`(${value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
             const highlightedText = reason.replace(regex, '<strong>$1</strong>');
 
@@ -363,7 +340,6 @@ export function setupAutocomplete() {
 
         autocompleteContainer.style.display = 'block';
 
-        // Показываем сообщение если вариантов больше лимита
         if (filteredReasons.length > displayLimit) {
             const moreDiv = document.createElement('div');
             moreDiv.innerHTML = `<em>и еще ${filteredReasons.length - displayLimit} вариантов...</em>`;
@@ -376,14 +352,12 @@ export function setupAutocomplete() {
         }
     });
 
-    // Обработчик клавиш для навигации по подсказкам
     input.addEventListener('keydown', function(e) {
         const items = autocompleteContainer.querySelectorAll('div');
         let activeItem = autocompleteContainer.querySelector('.autocomplete-active');
 
         if (!items.length) return;
 
-        // Клавиша вниз
         if (e.key === 'ArrowDown') {
             e.preventDefault();
             if (!activeItem) {
@@ -398,7 +372,6 @@ export function setupAutocomplete() {
             }
         }
 
-        // Клавиша вверх
         if (e.key === 'ArrowUp') {
             e.preventDefault();
             if (!activeItem) {
@@ -413,14 +386,12 @@ export function setupAutocomplete() {
             }
         }
 
-        // Enter или Tab
         if ((e.key === 'Enter' || e.key === 'Tab') && activeItem) {
             e.preventDefault();
             input.value = activeItem.textContent;
             closeAllLists();
         }
 
-        // Esc
         if (e.key === 'Escape') {
             closeAllLists();
         }
@@ -431,7 +402,6 @@ export function setupAutocomplete() {
         autocompleteContainer.innerHTML = '';
     }
 
-    // Закрываем подсказки при клике вне поля
     document.addEventListener('click', function(e) {
         if (!autocompleteContainer.contains(e.target) && e.target !== input) {
             closeAllLists();
@@ -439,11 +409,10 @@ export function setupAutocomplete() {
     });
 }
 
-// ============================================
-// ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
-// ============================================
-
-// Экспорт функций для глобального доступа
+/**
+ * Загружает заявку при клике на элемент списка
+ * @param {HTMLElement} element - DOM элемент заявки
+ */
 export function loadApplication(element) {
     const number = element.getAttribute('data-number');
     if (number && number !== 'null' && number !== '') {

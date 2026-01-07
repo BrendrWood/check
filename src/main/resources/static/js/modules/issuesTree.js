@@ -1,5 +1,6 @@
 // ============================================
 // МОДУЛЬ ДЕРЕВА НАРУШЕНИЙ
+// Управление деревом типовых нарушений и их выбором
 // ============================================
 
 import { state, SELECTORS, MESSAGES, CSS_CLASSES, ISSUES_TREE_CONFIG } from '../config.js';
@@ -7,6 +8,7 @@ import { showMessageInModal, showMessage } from './ui.js';
 
 // ============================================
 // КОНСТАНТА ДЕРЕВА НАРУШЕНИЙ
+// Структура нарушений по категориям и подкатегориям
 // ============================================
 
 const issuesTree = {
@@ -118,7 +120,8 @@ const issuesTree = {
 // ============================================
 
 /**
- * Инициализация дерева нарушений
+ * Инициализирует дерево нарушений в DOM
+ * Создает структуру категорий и подкатегорий
  */
 export function initIssuesTree() {
     if (state.issuesTreeInitialized) return;
@@ -129,11 +132,9 @@ export function initIssuesTree() {
     container.innerHTML = '';
 
     for (const category in issuesTree) {
-        // Контейнер категории
         const categoryDiv = document.createElement('div');
         categoryDiv.className = 'mb-3';
 
-        // Заголовок категории
         const categoryHeader = document.createElement('div');
         categoryHeader.className = ISSUES_TREE_CONFIG.CATEGORY_HEADER_CLASS;
         categoryHeader.innerHTML = `
@@ -141,16 +142,12 @@ export function initIssuesTree() {
             <span>${category}</span>
         `;
 
-        // Контент категории
         const categoryContent = document.createElement('div');
         categoryContent.className = ISSUES_TREE_CONFIG.CATEGORY_CONTENT_CLASS;
         categoryContent.style.display = 'none';
 
-        // Проверяем тип данных (объект или массив)
         if (typeof issuesTree[category] === 'object' && !Array.isArray(issuesTree[category])) {
-            // Есть подкатегории
             for (const subCategory in issuesTree[category]) {
-                // Подкатегория
                 const subCategoryDiv = document.createElement('div');
                 subCategoryDiv.className = 'mb-2';
 
@@ -165,13 +162,11 @@ export function initIssuesTree() {
                 subCategoryContent.className = ISSUES_TREE_CONFIG.SUBCATEGORY_CONTENT_CLASS;
                 subCategoryContent.style.display = 'none';
 
-                // Кнопки для каждого нарушения в подкатегории
                 issuesTree[category][subCategory].forEach(issue => {
                     const button = createIssueButton(issue);
                     subCategoryContent.appendChild(button);
                 });
 
-                // Обработчик клика на подкатегорию
                 subCategoryHeader.addEventListener('click', function(e) {
                     if (e.target.tagName === 'BUTTON') return;
                     toggleCategory(this, subCategoryContent);
@@ -182,14 +177,12 @@ export function initIssuesTree() {
                 categoryContent.appendChild(subCategoryDiv);
             }
         } else {
-            // Нет подкатегорий - просто кнопки
             issuesTree[category].forEach(issue => {
                 const button = createIssueButton(issue);
                 categoryContent.appendChild(button);
             });
         }
 
-        // Обработчик клика на категорию
         categoryHeader.addEventListener('click', function(e) {
             if (e.target.tagName === 'BUTTON') return;
             toggleCategory(this, categoryContent);
@@ -205,7 +198,9 @@ export function initIssuesTree() {
 }
 
 /**
- * Создание кнопки нарушения
+ * Создает кнопку для одного нарушения
+ * @param {string} issueText - Текст нарушения
+ * @returns {HTMLElement} DOM элемент кнопки
  */
 function createIssueButton(issueText) {
     const button = document.createElement('button');
@@ -214,7 +209,6 @@ function createIssueButton(issueText) {
     button.textContent = issueText;
     button.dataset.issue = issueText;
 
-    // Проверяем, есть ли уже это нарушение в комментариях
     const commentsField = document.getElementById('commentsField');
     if (commentsField && commentsField.value.includes(issueText)) {
         button.classList.add(CSS_CLASSES.ADDED);
@@ -229,18 +223,18 @@ function createIssueButton(issueText) {
 }
 
 /**
- * Переключение выбора нарушения
+ * Переключает выбор нарушения
+ * Добавляет или удаляет нарушение из выбранных
+ * @param {string} issueText - Текст нарушения
  */
 function toggleIssueSelection(issueText) {
     const button = document.querySelector(`.${ISSUES_TREE_CONFIG.ISSUE_BUTTON_CLASS}[data-issue="${issueText}"]`);
     if (!button) return;
 
     if (state.selectedIssues.has(issueText)) {
-        // Удаляем из выбранных
         state.selectedIssues.delete(issueText);
         button.classList.remove(CSS_CLASSES.ADDED);
     } else {
-        // Добавляем в выбранные
         state.selectedIssues.add(issueText);
         button.classList.add(CSS_CLASSES.ADDED);
     }
@@ -248,7 +242,7 @@ function toggleIssueSelection(issueText) {
 }
 
 /**
- * Обновить информацию о выбранных нарушениях
+ * Обновляет информацию о количестве выбранных нарушений
  */
 export function updateSelectedIssuesInfo() {
     const selectedCount = state.selectedIssues.size;
@@ -266,7 +260,8 @@ export function updateSelectedIssuesInfo() {
 }
 
 /**
- * Добавить выбранные нарушения в комментарии
+ * Добавляет выбранные нарушения в поле комментариев
+ * Форматирует текст и объединяет с существующими комментариями
  */
 export function addSelectedIssuesToComments() {
     const commentsField = document.getElementById('commentsField');
@@ -280,7 +275,6 @@ export function addSelectedIssuesToComments() {
         return;
     }
 
-    // Получаем текст выбранных нарушений
     const issuesText = Array.from(state.selectedIssues)
         .map(issueText => issueText.trim())
         .filter(text => text.length > 0)
@@ -291,18 +285,11 @@ export function addSelectedIssuesToComments() {
         return;
     }
 
-    // Получаем текущие комментарии
     let currentComments = commentsField.value.trim();
-
-    // Подготавливаем новые комментарии
     let newComments = '';
 
     if (currentComments) {
-        // Если уже есть комментарии, добавляем через запятую
-        // Удаляем лишние запятые в конце текущих комментариев
         currentComments = currentComments.replace(/,\s*$/, '');
-
-        // Проверяем последний символ
         const lastChar = currentComments[currentComments.length - 1];
         if (lastChar === '.' || lastChar === ',') {
             newComments = currentComments + ' ' + issuesText;
@@ -313,10 +300,8 @@ export function addSelectedIssuesToComments() {
         newComments = issuesText;
     }
 
-    // Обновляем поле комментариев
     commentsField.value = newComments;
 
-    // Закрываем модальное окно
     const modalElement = document.getElementById('issuesTreeModal');
     if (modalElement) {
         const modal = bootstrap.Modal.getInstance(modalElement);
@@ -325,35 +310,28 @@ export function addSelectedIssuesToComments() {
         }
     }
 
-    // Показываем сообщение
     showMessage(`Добавлено ${state.selectedIssues.size} нарушений в комментарии`, 'success');
-
-    // Очищаем выбранные нарушения
     clearSelectedIssues();
 }
 
 /**
- * Очистить выбранные нарушения
+ * Очищает все выбранные нарушения
+ * Сбрасывает состояние и обновляет интерфейс
  */
 export function clearSelectedIssues() {
-    // Убираем выделение со всех кнопок
     const selectedButtons = document.querySelectorAll(`.${ISSUES_TREE_CONFIG.ISSUE_BUTTON_CLASS}.${CSS_CLASSES.ADDED}`);
     selectedButtons.forEach(button => {
         button.classList.remove(CSS_CLASSES.ADDED);
     });
 
-    // Очищаем множество
     state.selectedIssues.clear();
-
-    // Обновляем информацию
     updateSelectedIssuesInfo();
-
-    // Показываем сообщение в модальном окне
     showMessageInModal('Выбор нарушений очищен', 'info');
 }
 
 /**
- * Поиск по нарушениям
+ * Выполняет поиск по дереву нарушений
+ * Фильтрует нарушения по введенному тексту
  */
 export function searchIssues() {
     const searchInput = document.getElementById('searchIssuesInput');
@@ -370,7 +348,6 @@ export function searchIssues() {
     const allCategories = document.querySelectorAll(`.${ISSUES_TREE_CONFIG.CATEGORY_CONTENT_CLASS}, .${ISSUES_TREE_CONFIG.SUBCATEGORY_CONTENT_CLASS}`);
     const allHeaders = document.querySelectorAll(`.${ISSUES_TREE_CONFIG.CATEGORY_HEADER_CLASS}, .${ISSUES_TREE_CONFIG.SUBCATEGORY_HEADER_CLASS}`);
 
-    // Сначала скрываем всё
     allCategories.forEach(content => content.style.display = 'none');
     allHeaders.forEach(header => header.style.display = 'none');
     issueButtons.forEach(button => {
@@ -380,7 +357,6 @@ export function searchIssues() {
 
     let foundCount = 0;
 
-    // Ищем и показываем совпадения
     issueButtons.forEach(button => {
         const issueText = button.textContent.toLowerCase();
 
@@ -389,16 +365,13 @@ export function searchIssues() {
             button.classList.add('highlighted');
             foundCount++;
 
-            // Показываем родительские элементы
             showParentsOfElement(button);
         }
     });
 
-    // Удаляем предыдущие сообщения о результатах
     const previousResults = document.querySelector('.search-results-info');
     if (previousResults) previousResults.remove();
 
-    // Показываем сообщение с результатами
     if (foundCount > 0) {
         const resultsInfo = document.createElement('div');
         resultsInfo.className = 'search-results-info';
@@ -410,32 +383,29 @@ export function searchIssues() {
             </button>
         `;
 
-        // Вставляем перед деревом
         const treeContainer = document.getElementById('issuesTreeContainer');
         if (treeContainer && treeContainer.parentNode) {
             treeContainer.parentNode.insertBefore(resultsInfo, treeContainer);
         }
     } else {
-        // Если ничего не найдено
         showMessageInModal(`По запросу "${searchTerm}" нарушений не найдено`, 'info');
     }
 }
 
 /**
- * Показать родителей элемента
+ * Показывает родительские элементы для найденного нарушения
+ * @param {HTMLElement} element - DOM элемент найденного нарушения
  */
 function showParentsOfElement(element) {
     let parent = element.parentElement;
     while (parent && !parent.classList.contains('issues-tree')) {
         parent.style.display = 'block';
 
-        // Показываем заголовок если он есть
         const header = parent.previousElementSibling;
         if (header && (header.classList.contains(ISSUES_TREE_CONFIG.CATEGORY_HEADER_CLASS) ||
                        header.classList.contains(ISSUES_TREE_CONFIG.SUBCATEGORY_HEADER_CLASS))) {
             header.style.display = 'flex';
 
-            // Разворачиваем иконку
             const icon = header.querySelector(`.${ISSUES_TREE_CONFIG.COLLAPSE_ICON_CLASS}`);
             if (icon) {
                 icon.classList.remove('bi-chevron-right');
@@ -448,7 +418,8 @@ function showParentsOfElement(element) {
 }
 
 /**
- * Очистить поиск по нарушениям
+ * Очищает результаты поиска по нарушениям
+ * Восстанавливает полное дерево нарушений
  */
 export function clearIssuesSearch() {
     const searchInput = document.getElementById('searchIssuesInput');
@@ -456,7 +427,6 @@ export function clearIssuesSearch() {
 
     searchInput.value = '';
 
-    // Восстанавливаем полное дерево
     const allCategories = document.querySelectorAll(`.${ISSUES_TREE_CONFIG.CATEGORY_CONTENT_CLASS}, .${ISSUES_TREE_CONFIG.SUBCATEGORY_CONTENT_CLASS}`);
     const allHeaders = document.querySelectorAll(`.${ISSUES_TREE_CONFIG.CATEGORY_HEADER_CLASS}, .${ISSUES_TREE_CONFIG.SUBCATEGORY_HEADER_CLASS}`);
     const issueButtons = document.querySelectorAll(`.${ISSUES_TREE_CONFIG.ISSUE_BUTTON_CLASS}`);
@@ -465,10 +435,8 @@ export function clearIssuesSearch() {
     allHeaders.forEach(header => header.style.display = 'flex');
     issueButtons.forEach(button => button.style.display = 'block');
 
-    // Убираем подсветку
     issueButtons.forEach(button => button.classList.remove('highlighted'));
 
-    // Удаляем сообщение о результатах
     const resultsInfo = document.querySelector('.search-results-info');
     if (resultsInfo) resultsInfo.remove();
 
@@ -476,7 +444,7 @@ export function clearIssuesSearch() {
 }
 
 /**
- * Развернуть все категории
+ * Разворачивает все категории дерева нарушений
  */
 export function expandAllCategories() {
     const contents = document.querySelectorAll(`.${ISSUES_TREE_CONFIG.CATEGORY_CONTENT_CLASS}, .${ISSUES_TREE_CONFIG.SUBCATEGORY_CONTENT_CLASS}`);
@@ -495,7 +463,7 @@ export function expandAllCategories() {
 }
 
 /**
- * Свернуть все категории
+ * Сворачивает все категории дерева нарушений
  */
 export function collapseAllCategories() {
     const contents = document.querySelectorAll(`.${ISSUES_TREE_CONFIG.CATEGORY_CONTENT_CLASS}, .${ISSUES_TREE_CONFIG.SUBCATEGORY_CONTENT_CLASS}`);
@@ -514,16 +482,15 @@ export function collapseAllCategories() {
 }
 
 /**
- * Настройка обработчиков для дерева нарушений
+ * Настраивает обработчики для дерева нарушений
+ * Обрабатывает открытие модального окна и поиск
  */
 export function setupIssuesTreeHandlers() {
-    // Открытие модального окна с деревом нарушений
     const openIssuesTreeBtn = document.getElementById('openIssuesTreeBtn');
     if (openIssuesTreeBtn) {
         openIssuesTreeBtn.addEventListener('click', openIssuesTreeModal);
     }
 
-    // Очистка выбранных нарушений при закрытии модального окна
     const issuesTreeModal = document.getElementById('issuesTreeModal');
     if (issuesTreeModal) {
         issuesTreeModal.addEventListener('hidden.bs.modal', function() {
@@ -531,7 +498,6 @@ export function setupIssuesTreeHandlers() {
         });
     }
 
-    // Поиск по нарушениям при нажатии Enter
     const searchIssuesInput = document.getElementById('searchIssuesInput');
     if (searchIssuesInput) {
         searchIssuesInput.addEventListener('keypress', function(e) {
@@ -544,21 +510,18 @@ export function setupIssuesTreeHandlers() {
 }
 
 /**
- * Открытие модального окна дерева нарушений
+ * Открывает модальное окно с деревом нарушений
+ * Инициализирует дерево и проверяет текущие нарушения в комментариях
  */
 export function openIssuesTreeModal() {
-    // Инициализируем дерево если еще не инициализировано
     initIssuesTree();
 
-    // Проверяем текущие нарушения в комментариях
     const commentsField = document.getElementById('commentsField');
     if (commentsField) {
         const currentComments = commentsField.value;
 
-        // Очищаем текущий выбор
         clearSelectedIssues();
 
-        // Помечаем кнопки нарушений, которые уже есть в комментариях
         const issueButtons = document.querySelectorAll(`.${ISSUES_TREE_CONFIG.ISSUE_BUTTON_CLASS}`);
         issueButtons.forEach(button => {
             const issueText = button.dataset.issue;
@@ -571,7 +534,6 @@ export function openIssuesTreeModal() {
         updateSelectedIssuesInfo();
     }
 
-    // Показываем модальное окно
     const modalElement = document.getElementById('issuesTreeModal');
     if (modalElement) {
         const modal = new bootstrap.Modal(modalElement);
@@ -584,7 +546,9 @@ export function openIssuesTreeModal() {
 // ============================================
 
 /**
- * Переключение категории (развернуть/свернуть)
+ * Переключает отображение категории (развернуть/свернуть)
+ * @param {HTMLElement} headerElement - Заголовок категории
+ * @param {HTMLElement} contentElement - Контент категории
  */
 function toggleCategory(headerElement, contentElement) {
     const icon = headerElement.querySelector(`.${ISSUES_TREE_CONFIG.COLLAPSE_ICON_CLASS}`);
@@ -600,7 +564,7 @@ function toggleCategory(headerElement, contentElement) {
 }
 
 // ============================================
-// ГЛОБАЛЬНЫЙ ЭКСПОРТ ДЛЯ ОБРАБОТЧИКОВ В HTML
+// ГЛОБАЛЬНЫЙ ЭКСПОРТ
 // ============================================
 
 if (typeof window !== 'undefined') {

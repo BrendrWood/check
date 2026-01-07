@@ -1,18 +1,21 @@
 // ============================================
 // МОДУЛЬ ТАБЛИЦЫ ЗАЯВОК
+// Управление отображением и взаимодействием с заявками
 // ============================================
 
 import { state, API_ENDPOINTS, MESSAGES, CSS_CLASSES } from '../config.js';
 import { showMessage, showTempMessage } from './ui.js';
 import { fillFormWithApplication } from './formHandlers.js';
 import { formatTime, formatDateForDisplay } from './utils.js';
+import { createRadioDateScroll, initRadioDateScroll } from './radioDateScroll.js';
 
 // ============================================
 // ЭКСПОРТИРУЕМЫЕ ФУНКЦИИ
 // ============================================
 
 /**
- * Загрузить последние заявки
+ * Загружает последние 20 заявок для отображения в списке
+ * Обновляет интерфейс с полученными данными
  */
 export async function loadRecentApplications() {
     try {
@@ -27,7 +30,8 @@ export async function loadRecentApplications() {
 }
 
 /**
- * Обновить список последних заявок
+ * Обновляет список последних заявок в интерфейсе
+ * @param {Array} applications - Массив заявок для отображения
  */
 function updateRecentApplicationsList(applications) {
     const container = document.getElementById('applicationsList');
@@ -50,7 +54,6 @@ function updateRecentApplicationsList(applications) {
         container.appendChild(appDiv);
     });
 
-    // Обновить счетчик
     const countElement = document.getElementById('applicationsCount');
     if (countElement) {
         countElement.textContent = applications.length;
@@ -58,7 +61,9 @@ function updateRecentApplicationsList(applications) {
 }
 
 /**
- * Создать элемент заявки для списка
+ * Создает DOM элемент для одной заявки в списке
+ * @param {Object} app - Объект заявки
+ * @returns {HTMLElement} DOM элемент заявки
  */
 function createApplicationItem(app) {
     const div = document.createElement('div');
@@ -96,7 +101,8 @@ function createApplicationItem(app) {
 }
 
 /**
- * Загрузить все заявки для таблицы
+ * Загружает все заявки для отображения в таблице
+ * Кэширует данные для последующего использования
  */
 export async function loadAllApplicationsTable() {
     try {
@@ -104,11 +110,9 @@ export async function loadAllApplicationsTable() {
         if (!response.ok) throw new Error(MESSAGES.LOAD_ERROR);
         const applications = await response.json();
 
-        // Сохраняем в кэш
         state.allApplicationsCache = applications;
         state.lastFetchTime = Date.now();
 
-        // Отображаем таблицу
         renderAllApplicationsTable(applications);
 
     } catch (error) {
@@ -126,30 +130,26 @@ export async function loadAllApplicationsTable() {
 }
 
 /**
- * Отобразить таблицу всех заявок с группировкой по дням
+/**
+ * Отображает таблицу всех заявок с группировкой по дням
+ * @param {Array} applications - Массив всех заявок
  */
 export function renderAllApplicationsTable(applications) {
     const container = document.getElementById('allApplicationsTableContainer');
     if (!container) return;
 
-    // Группировка по датам
     const groupedByDate = groupApplicationsByDate(applications);
 
     let html = '';
 
-    // Навигация по датам
-    html += `<div class="date-navigation" id="dateNavigation">`;
-    Object.keys(groupedByDate).forEach(date => {
-        const count = groupedByDate[date].length;
-        html += `
-            <span class="date-chip" onclick="scrollToDate('${date}')">
-                ${formatDateForDisplay(date)} <span class="badge bg-secondary">${count}</span>
-            </span>
-        `;
-    });
-    html += `</div>`;
+    // Добавляем радио-прокрутку дат
+    const datesForScroll = Object.keys(groupedByDate).map(date => ({
+        date: date,
+        count: groupedByDate[date].length
+    }));
 
-    // Таблица по дням
+    html += createRadioDateScroll(datesForScroll);
+
     Object.keys(groupedByDate).forEach(date => {
         const dayApplications = groupedByDate[date];
 
@@ -218,15 +218,21 @@ export function renderAllApplicationsTable(applications) {
 
     container.innerHTML = html;
 
-    // Обновить статистику
     updateAllTableStats(applications);
-
-    // Добавить обработчики для строк
     attachTableRowHandlers();
+
+    // Инициализируем радио-прокрутку после рендеринга
+    setTimeout(() => {
+        if (typeof initRadioDateScroll === 'function') {
+            initRadioDateScroll();
+        }
+    }, 100);
 }
 
 /**
- * Группировка заявок по дате
+ * Группирует заявки по дате последнего обновления
+ * @param {Array} applications - Массив заявок
+ * @returns {Object} Объект с заявками, сгруппированными по дате
  */
 function groupApplicationsByDate(applications) {
     const grouped = {};
@@ -235,7 +241,7 @@ function groupApplicationsByDate(applications) {
         let dateStr;
         if (app.lastUpdated) {
             const date = new Date(app.lastUpdated);
-            dateStr = date.toISOString().split('T')[0]; // YYYY-MM-DD
+            dateStr = date.toISOString().split('T')[0];
         } else {
             dateStr = 'Без даты';
         }
@@ -246,7 +252,6 @@ function groupApplicationsByDate(applications) {
         grouped[dateStr].push(app);
     });
 
-    // Сортировка дат по убыванию
     const sortedGrouped = {};
     Object.keys(grouped)
         .sort((a, b) => b.localeCompare(a))
@@ -258,7 +263,8 @@ function groupApplicationsByDate(applications) {
 }
 
 /**
- * Обновить статистику таблицы
+ * Обновляет статистику таблицы всех заявок
+ * @param {Array} applications - Массив заявок
  */
 function updateAllTableStats(applications) {
     const totalCount = applications.length;
@@ -277,7 +283,9 @@ function updateAllTableStats(applications) {
 }
 
 /**
- * Загрузить заявку из таблицы
+ * Загружает заявку по ID и заполняет форму данными
+ * Закрывает модальное окно таблицы после загрузки
+ * @param {number} id - ID заявки
  */
 export async function loadFromTable(id) {
     try {
@@ -285,10 +293,8 @@ export async function loadFromTable(id) {
         if (!response.ok) throw new Error('Заявка не найдена');
         const application = await response.json();
 
-        // Заполнить форму данными
         fillFormWithApplication(application);
 
-        // Закрыть модальное окно
         const modalElement = document.getElementById('allApplicationsModal');
         if (modalElement) {
             const modal = bootstrap.Modal.getInstance(modalElement);
@@ -297,7 +303,6 @@ export async function loadFromTable(id) {
             }
         }
 
-        // Показывать сообщение
         showTempMessage(`Загружена заявка ${application.applicationNumber}`, 'success');
     } catch (error) {
         showTempMessage(`Ошибка: ${error.message}`, 'error');
@@ -305,7 +310,10 @@ export async function loadFromTable(id) {
 }
 
 /**
- * Удалить заявку
+ * Удаляет заявку по ID после подтверждения
+ * Обновляет списки заявок после удаления
+ * @param {number} id - ID заявки
+ * @param {Event} event - Событие клика
  */
 export async function deleteApplication(id, event = null) {
     if (event) event.stopPropagation();
@@ -322,18 +330,14 @@ export async function deleteApplication(id, event = null) {
         if (response.ok) {
             showTempMessage(MESSAGES.APPLICATION_DELETED, 'success');
 
-            // Обновить списки
             loadRecentApplications();
 
-            // Очистить кэш
             state.allApplicationsCache = null;
             state.lastFetchTime = null;
 
-            // Очистить результаты поиска
             state.searchResults = [];
             state.isSearchActive = false;
 
-            // Очистить фильтр даты
             state.isDateFilterActive = false;
             state.currentDateFilter = null;
         } else {
@@ -345,7 +349,10 @@ export async function deleteApplication(id, event = null) {
 }
 
 /**
- * Рендер заявок в виде таблицы
+ * Рендерит массив заявок в виде HTML таблицы
+ * @param {Array} applications - Массив заявок
+ * @param {boolean} showHeader - Показывать заголовок таблицы
+ * @returns {string} HTML код таблицы
  */
 export function renderApplicationsAsTable(applications, showHeader = true) {
     let html = '';
@@ -413,10 +420,10 @@ export function renderApplicationsAsTable(applications, showHeader = true) {
 }
 
 /**
- * Настройка обработчиков для таблицы заявок
+ * Настраивает обработчики событий для таблицы заявок
+ * Обрабатывает открытие модального окна, поиск и закрытие
  */
 export function setupApplicationsTableHandlers() {
-    // Кнопка открытия таблицы всех заявок
     const openAllAppsBtn = document.getElementById('openAllApplicationsBtn');
     if (openAllAppsBtn) {
         openAllAppsBtn.addEventListener('click', function() {
@@ -424,21 +431,26 @@ export function setupApplicationsTableHandlers() {
             if (modalElement) {
                 const modal = new bootstrap.Modal(modalElement);
                 modal.show();
-                // Загрузить данные при открытии
                 setTimeout(() => loadAllApplicationsTable(), 300);
             }
         });
     }
 
-    // Очистка кэша при закрытии модального окна
     const allAppsModal = document.getElementById('allApplicationsModal');
     if (allAppsModal) {
+        // Инициализируем радио-прокрутку после показа модального окна
+        allAppsModal.addEventListener('shown.bs.modal', function() {
+            setTimeout(() => {
+                if (typeof window.initRadioDateScroll === 'function') {
+                    window.initRadioDateScroll();
+                }
+            }, 500);
+        });
+
         allAppsModal.addEventListener('hidden.bs.modal', function() {
-            // Очищаем поиск
             if (typeof window.clearSearchResults === 'function') {
                 window.clearSearchResults();
             }
-            // Очищаем фильтр даты
             if (typeof window.clearDateFilter === 'function') {
                 window.clearDateFilter();
             }
@@ -449,7 +461,6 @@ export function setupApplicationsTableHandlers() {
         });
     }
 
-    // Обработка нажатия Enter в поиске таблицы
     const searchAllTableInput = document.getElementById('searchAllTable');
     if (searchAllTableInput) {
         searchAllTableInput.addEventListener('keypress', function(e) {
@@ -464,7 +475,8 @@ export function setupApplicationsTableHandlers() {
 }
 
 /**
- * Прикрепить обработчики для строк таблицы
+ * Прикрепляет обработчики событий к строкам таблицы
+ * Обрабатывает двойной клик и выделение строк
  */
 export function attachTableRowHandlers() {
     const rows = document.querySelectorAll('.app-row');
@@ -514,6 +526,32 @@ if (typeof window !== 'undefined') {
         }
     };
     window.scrollToDate = function(date) {
+        // Прокручиваем радио-кнопку к выбранной дате
+        const chip = document.querySelector(`.date-radio-chip[data-date="${date}"]`);
+        if (chip) {
+            // Удаляем активный класс у всех чипов
+            document.querySelectorAll('.date-radio-chip').forEach(c => {
+                c.classList.remove('active');
+            });
+            // Добавляем активный класс выбранному
+            chip.classList.add('active');
+
+            // Центрируем элемент
+            const container = document.getElementById('dateRadioScroll');
+            if (container && chip) {
+                const containerWidth = container.clientWidth;
+                const elementLeft = chip.offsetLeft;
+                const elementWidth = chip.clientWidth;
+                const scrollLeft = elementLeft - (containerWidth / 2) + (elementWidth / 2);
+
+                container.scrollTo({
+                    left: scrollLeft,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        // Прокручиваем страницу к группе заявок
         const element = document.getElementById(`date-${date}`);
         if (element) {
             element.scrollIntoView({ behavior: 'smooth', block: 'start' });

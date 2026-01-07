@@ -1,7 +1,9 @@
-// compactDates.js - Только компактизация дат, без изменения логики
+// compactDates.js
+// Оптимизация отображения навигации по датам при большом количестве дней
 
 /**
- * Добавить компактные классы при большом количестве дней
+ * Добавляет компактные классы к навигации по датам
+ * при большом количестве дней для улучшения отображения
  */
 export function optimizeDateDisplay() {
     const dateNavigation = document.getElementById('dateNavigation');
@@ -10,7 +12,6 @@ export function optimizeDateDisplay() {
     const dateChips = dateNavigation.querySelectorAll('.date-chip');
     const dateCount = dateChips.length;
 
-    // Автоматически добавляем компактные классы
     if (dateCount > 20) {
         dateNavigation.classList.add('many-days');
     }
@@ -19,7 +20,6 @@ export function optimizeDateDisplay() {
         dateNavigation.classList.add('very-many-days');
     }
 
-    // Добавляем title для компактных дат
     dateChips.forEach(chip => {
         if (!chip.getAttribute('title')) {
             const text = chip.textContent.replace(/\s+/g, ' ').trim();
@@ -29,7 +29,8 @@ export function optimizeDateDisplay() {
 }
 
 /**
- * Автоматически развернуть сегодняшний день
+ * Автоматически разворачивает группу заявок для сегодняшнего дня
+ * Если сегодняшних заявок нет, разворачивает вчерашние или первую группу
  */
 export function autoExpandToday() {
     const today = new Date();
@@ -38,7 +39,6 @@ export function autoExpandToday() {
     yesterday.setDate(yesterday.getDate() - 1);
     const yesterdayStr = yesterday.toISOString().split('T')[0];
 
-    // Сначала пытаемся развернуть сегодня
     const todayElement = document.getElementById(`date-${todayStr}`);
     if (todayElement) {
         setTimeout(() => {
@@ -48,7 +48,6 @@ export function autoExpandToday() {
         return;
     }
 
-    // Если сегодня нет, разворачиваем вчера
     const yesterdayElement = document.getElementById(`date-${yesterdayStr}`);
     if (yesterdayElement) {
         setTimeout(() => {
@@ -57,7 +56,6 @@ export function autoExpandToday() {
         return;
     }
 
-    // Иначе разворачиваем первую дату
     const firstDateGroup = document.querySelector('.date-group');
     if (firstDateGroup) {
         const firstDate = firstDateGroup.id.replace('date-', '');

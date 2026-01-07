@@ -1,31 +1,32 @@
-// radioDateScroll.js - Радио-прокрутка для навигации по датам
+// radioDateScroll.js
+// Создание и управление радио-прокруткой для навигации по датам
 
 import { formatDateForDisplay } from './utils.js';
 
 /**
- * Создать радио-прокрутку для навигации по датам
+ * Создает HTML структуру радио-прокрутки для навигации по датам
+ * @param {Array} dates - Массив объектов с датами и количеством заявок
+ * @param {string} containerId - ID контейнера для вставки
+ * @returns {string} HTML код радио-прокрутки
  */
 export function createRadioDateScroll(dates, containerId = 'dateRadioScrollContainer') {
     if (dates.length === 0) return '';
 
-    // Создаем HTML структуру
     let html = `
         <div class="date-radio-scroll-container">
             <div class="date-radio-center-marker"></div>
             <div class="date-radio-scroll" id="dateRadioScroll">
     `;
 
-    // Добавляем кнопки дат
     dates.forEach(dateObj => {
         const displayText = getCompactDateText(dateObj.date, dateObj.count);
         const isToday = isTodayDate(dateObj.date);
-        const isYesterday = isYesterdayDate(dateObj.date);
 
         html += `
             <div class="date-radio-chip ${isToday ? 'active' : ''}"
                  data-date="${dateObj.date}"
                  data-count="${dateObj.count}"
-                 onclick="selectDateRadio('${dateObj.date}')"
+                 onclick="toggleDateByChip('${dateObj.date}')"
                  title="${getFullDateTitle(dateObj.date, dateObj.count)}">
                 ${displayText}
             </div>
@@ -35,48 +36,53 @@ export function createRadioDateScroll(dates, containerId = 'dateRadioScrollConta
     html += `
             </div>
         </div>
-
-        <div class="date-radio-controls">
-            <button class="btn btn-sm btn-outline-secondary" onclick="scrollDateRadio(-1)">
-                <i class="bi bi-chevron-left"></i> Предыдущий
-            </button>
-            <button class="btn btn-sm btn-outline-secondary" onclick="scrollDateRadio(1)">
-                Следующий <i class="bi bi-chevron-right"></i>
-            </button>
-            <button class="btn btn-sm btn-outline-primary" onclick="centerOnToday()">
-                <i class="bi bi-calendar-check"></i> Сегодня
-            </button>
-        </div>
     `;
-
-    // Если дней много, добавляем пагинацию по месяцам
-    if (dates.length > 30) {
-        html += createMonthPagination(dates);
-    }
 
     return html;
 }
 
 /**
- * Компактное отображение даты
+ * Форматирует дату в компактный текст для отображения
+ * @param {string} dateString - Дата в формате YYYY-MM-DD
+ * @param {number} count - Количество заявок
+ * @returns {string} Компактный текст даты
  */
 function getCompactDateText(dateString, count) {
     const display = formatDateForDisplay(dateString);
 
-    // Сокращаем для компактности
-    if (display === 'Сегодня') return `Сег ${count}`;
-    if (display === 'Вчера') return `Вч ${count}`;
+    if (display === 'Сегодня') return `С ${count}`;      // Укоротили "Сег" до "С"
+    if (display === 'Вчера') return `В ${count}`;        // Укоротили "Вч" до "В"
 
-    // Форматируем: "25 дек" или "чт 25"
     const date = new Date(dateString);
     const day = date.getDate();
     const month = date.toLocaleDateString('ru-RU', { month: 'short' }).replace('.', '');
 
-    return `${day} ${month} ${count}`;
+    // Сокращаем название месяцев для компактности
+    const shortMonths = {
+        'янв': 'янв',
+        'фев': 'фев',
+        'мар': 'мар',
+        'апр': 'апр',
+        'май': 'мая',  // Для мая своя форма
+        'июн': 'июн',
+        'июл': 'июл',
+        'авг': 'авг',
+        'сен': 'сен',
+        'окт': 'окт',
+        'ноя': 'ноя',
+        'дек': 'дек'
+    };
+
+    const shortMonth = shortMonths[month.toLowerCase()] || month.slice(0, 3);
+
+    return `${day} ${shortMonth} ${count}`;
 }
 
 /**
- * Полное название для title
+ * Создает полное название даты для всплывающей подсказки
+ * @param {string} dateString - Дата в формате YYYY-MM-DD
+ * @param {number} count - Количество заявок
+ * @returns {string} Полное название даты
  */
 function getFullDateTitle(dateString, count) {
     const date = new Date(dateString);
@@ -91,7 +97,9 @@ function getFullDateTitle(dateString, count) {
 }
 
 /**
- * Проверка на сегодня
+ * Проверяет, является ли дата сегодняшней
+ * @param {string} dateString - Дата в формате YYYY-MM-DD
+ * @returns {boolean} true если дата сегодняшняя
  */
 function isTodayDate(dateString) {
     const today = new Date();
@@ -100,86 +108,18 @@ function isTodayDate(dateString) {
 }
 
 /**
- * Проверка на вчера
- */
-function isYesterdayDate(dateString) {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const checkDate = new Date(dateString);
-    return yesterday.toDateString() === checkDate.toDateString();
-}
-
-/**
- * Создать пагинацию по месяцам
- */
-function createMonthPagination(dates) {
-    const months = groupDatesByMonth(dates);
-
-    let html = '<div class="month-pagination" id="monthPagination">';
-
-    Object.keys(months).forEach(month => {
-        const monthDisplay = formatMonth(month);
-        const total = months[month].reduce((sum, d) => sum + d.count, 0);
-
-        html += `
-            <div class="month-pagination-chip"
-                 onclick="scrollToMonth('${month}')"
-                 title="${months[month].length} дней, ${total} заявок">
-                ${monthDisplay} <span class="badge bg-secondary">${total}</span>
-            </div>
-        `;
-    });
-
-    html += '</div>';
-
-    return html;
-}
-
-/**
- * Группировка по месяцам
- */
-function groupDatesByMonth(dates) {
-    const months = {};
-
-    dates.forEach(dateObj => {
-        const month = dateObj.date.substring(0, 7); // "2024-12"
-
-        if (!months[month]) {
-            months[month] = [];
-        }
-
-        months[month].push(dateObj);
-    });
-
-    return months;
-}
-
-/**
- * Форматирование месяца
- */
-function formatMonth(monthStr) {
-    const [year, month] = monthStr.split('-');
-    const monthNames = [
-        'Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн',
-        'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'
-    ];
-
-    return `${monthNames[parseInt(month) - 1]} ${year.slice(2)}`;
-}
-
-/**
- * Инициализация радио-прокрутки
+ * Инициализирует радио-прокрутку
+ * Центрирует сегодняшний день и настраивает обработчики
  */
 export function initRadioDateScroll() {
     const scrollContainer = document.getElementById('dateRadioScroll');
     if (!scrollContainer) return;
 
-    // Центрируем сегодняшний день
+    // Устанавливаем активный чип (сегодня или первый)
     const todayChip = scrollContainer.querySelector('.date-radio-chip.active');
     if (todayChip) {
         centerElement(todayChip);
     } else {
-        // Или первый элемент
         const firstChip = scrollContainer.querySelector('.date-radio-chip');
         if (firstChip) {
             firstChip.classList.add('active');
@@ -187,15 +127,19 @@ export function initRadioDateScroll() {
         }
     }
 
+    // Настраиваем прокрутку колесом мыши с увеличенной скоростью
+    setupMouseWheelScroll(scrollContainer);
+
+    // Обновляем визуальное состояние чипов
+    updateChipOpacity();
+
     // Обновляем прозрачность при скролле
     scrollContainer.addEventListener('scroll', updateChipOpacity);
-
-    // Инициализируем прозрачность
-    updateChipOpacity();
 }
 
 /**
- * Центрирование элемента
+ * Центрирует элемент в контейнере прокрутки
+ * @param {HTMLElement} element - Элемент для центрирования
  */
 function centerElement(element) {
     const container = element.parentElement;
@@ -214,9 +158,65 @@ function centerElement(element) {
 }
 
 /**
- * Обновление прозрачности кнопок при скролле
+ * Настраивает прокрутку колесом мыши с увеличенной скоростью
+ * @param {HTMLElement} container - Контейнер для прокрутки
  */
-function updateChipOpacity() {
+function setupMouseWheelScroll(container) {
+    let isScrolling = false;
+
+    container.addEventListener('wheel', function(e) {
+        e.preventDefault();
+
+        // Увеличиваем скорость прокрутки в 1.5 раза
+        const scrollSpeedMultiplier = 1.5;
+        const scrollAmount = e.deltaY * scrollSpeedMultiplier;
+
+        // Прокручиваем с плавностью
+        container.scrollLeft += scrollAmount;
+
+        // Обновляем визуализацию
+        if (!isScrolling) {
+            isScrolling = true;
+            updateChipOpacity();
+
+            // Сбрасываем флаг через короткую задержку
+            setTimeout(() => {
+                isScrolling = false;
+            }, 50);
+        }
+    });
+
+    // Также добавляем поддержку тачпада для Mac
+    container.addEventListener('touchstart', function(e) {
+        this.touchStartX = e.touches[0].clientX;
+        this.scrollStartLeft = this.scrollLeft;
+        this.isTouchScrolling = true;
+    });
+
+    container.addEventListener('touchmove', function(e) {
+        if (!this.isTouchScrolling) return;
+
+        const touchX = e.touches[0].clientX;
+        const diffX = this.touchStartX - touchX;
+
+        // Увеличиваем скорость прокрутки на тачпаде
+        const touchSpeedMultiplier = 1.5;
+        this.scrollLeft = this.scrollStartLeft + (diffX * touchSpeedMultiplier);
+
+        updateChipOpacity();
+        e.preventDefault();
+    });
+
+    container.addEventListener('touchend', function() {
+        this.isTouchScrolling = false;
+    });
+}
+
+/**
+ * Обновляет прозрачность кнопок при скролле
+ * Делает центральные элементы более заметными
+ */
+export function updateChipOpacity() {
     const container = document.getElementById('dateRadioScroll');
     if (!container) return;
 
@@ -230,17 +230,14 @@ function updateChipOpacity() {
         const chipCenter = chipRect.left + chipRect.width / 2;
         const distance = Math.abs(chipCenter - containerCenter);
 
-        // Убираем все классы
         chip.classList.remove('active', 'near-center');
 
-        // Вычисляем прозрачность на основе расстояния
         const maxDistance = containerRect.width / 2;
         const opacity = 1 - (distance / maxDistance);
 
         chip.style.opacity = Math.max(0.3, Math.min(1, opacity));
         chip.style.transform = `scale(${0.9 + (opacity * 0.2)})`;
 
-        // Добавляем классы для ближайших элементов
         if (distance < 30) {
             chip.classList.add('active');
         } else if (distance < 100) {
@@ -251,44 +248,29 @@ function updateChipOpacity() {
 
 // Глобальный экспорт функций
 if (typeof window !== 'undefined') {
-    window.selectDateRadio = function(date) {
+    window.toggleDateByChip = function(date) {
         const chip = document.querySelector(`.date-radio-chip[data-date="${date}"]`);
         if (chip) {
-            centerElement(chip);
-            // Прокручиваем к соответствующей группе дат
-            window.scrollToDate(date);
-        }
-    };
+            const content = document.getElementById(`content-${date}`);
+            const header = document.getElementById(`date-${date}`);
 
-    window.scrollDateRadio = function(direction) {
-        const container = document.getElementById('dateRadioScroll');
-        if (!container) return;
+            // Проверяем, открыта ли уже эта группа
+            const isCurrentlyExpanded = content.style.display !== 'none';
 
-        const scrollAmount = 150; // пикселей за клик
-        container.scrollBy({
-            left: scrollAmount * direction,
-            behavior: 'smooth'
-        });
-
-        // Обновляем прозрачность после скролла
-        setTimeout(updateChipOpacity, 300);
-    };
-
-    window.centerOnToday = function() {
-        const todayChip = document.querySelector('.date-radio-chip.active');
-        if (todayChip) {
-            centerElement(todayChip);
-        }
-    };
-
-    window.scrollToMonth = function(month) {
-        const container = document.getElementById('dateRadioScroll');
-        if (!container) return;
-
-        // Находим первую дату этого месяца
-        const firstDateOfMonth = document.querySelector(`.date-radio-chip[data-date^="${month}"]`);
-        if (firstDateOfMonth) {
-            centerElement(firstDateOfMonth);
+            // Если группа уже открыта - сворачиваем ее
+            if (isCurrentlyExpanded) {
+                content.style.display = 'none';
+                header.classList.remove('expanded');
+                const icon = header.querySelector('.collapse-icon');
+                if (icon) {
+                    icon.classList.remove('bi-chevron-down');
+                    icon.classList.add('bi-chevron-right');
+                }
+            } else {
+                // Если группа закрыта - открываем и центрируем
+                centerElement(chip);
+                window.scrollToDate(date);
+            }
         }
     };
 

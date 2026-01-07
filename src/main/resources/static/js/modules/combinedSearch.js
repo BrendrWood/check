@@ -1,5 +1,6 @@
 // ============================================
 // МОДУЛЬ КОМБИНИРОВАННОЙ ФИЛЬТРАЦИИ
+// Обработка фильтрации по тексту и дате одновременно
 // ============================================
 
 import { state, MESSAGES } from '../config.js';
@@ -7,7 +8,8 @@ import { showMessageInModal, showTempMessage } from './ui.js';
 import { renderApplicationsAsTable, attachTableRowHandlers } from './applicationsTable.js';
 
 /**
- * Применение комбинированного фильтра
+ * Применяет комбинированный фильтр по тексту и дате
+ * Загружает данные, фильтрует и отображает результаты
  */
 export async function applyCombinedFilter() {
     const searchTerm = document.getElementById('searchAllTable').value.trim().toLowerCase();
@@ -19,10 +21,8 @@ export async function applyCombinedFilter() {
     }
 
     try {
-        // Показать индикатор загрузки
         showCombinedFilterLoading();
 
-        // Загружаем все заявки
         let applications;
         if (state.allApplicationsCache) {
             applications = state.allApplicationsCache;
@@ -34,10 +34,8 @@ export async function applyCombinedFilter() {
             state.lastFetchTime = Date.now();
         }
 
-        // Применяем фильтры последовательно
         let filteredApplications = [...applications];
 
-        // Фильтр по текстовому поиску
         if (searchTerm) {
             filteredApplications = filteredApplications.filter(app =>
                 matchesSearch(app, searchTerm)
@@ -45,7 +43,6 @@ export async function applyCombinedFilter() {
             state.currentSearchTerm = searchTerm;
         }
 
-        // Фильтр по дате
         if (dateInput) {
             filteredApplications = filteredApplications.filter(app => {
                 if (!app.lastUpdated) return false;
@@ -59,14 +56,10 @@ export async function applyCombinedFilter() {
             state.currentFilterDate = dateInput;
         }
 
-        // Сохраняем состояние
         state.combinedFilterActive = true;
         state.searchResults = filteredApplications;
 
-        // Отображаем результаты
         displayCombinedResults(filteredApplications, searchTerm, dateInput);
-
-        // Обновляем статистику
         updateCombinedStats(filteredApplications.length, searchTerm, dateInput);
 
     } catch (error) {
@@ -76,7 +69,10 @@ export async function applyCombinedFilter() {
 }
 
 /**
- * Отображение результатов комбинированного фильтра
+ * Отображает результаты комбинированной фильтрации
+ * @param {Array} applications - Отфильтрованные заявки
+ * @param {string} searchTerm - Поисковый запрос
+ * @param {string} dateInput - Выбранная дата
  */
 function displayCombinedResults(applications, searchTerm, dateInput) {
     const container = document.getElementById('allApplicationsTableContainer');
@@ -128,7 +124,10 @@ function displayCombinedResults(applications, searchTerm, dateInput) {
 }
 
 /**
- * Форматирование описания фильтра
+ * Форматирует описание активных фильтров
+ * @param {string} searchTerm - Поисковый запрос
+ * @param {string} dateStr - Отформатированная дата
+ * @returns {string} Текст описания фильтров
  */
 function getFilterDescription(searchTerm, dateStr) {
     const parts = [];
@@ -145,7 +144,10 @@ function getFilterDescription(searchTerm, dateStr) {
 }
 
 /**
- * Сообщение при отсутствии результатов
+ * Формирует сообщение об отсутствии результатов
+ * @param {string} searchTerm - Поисковый запрос
+ * @param {string} dateInput - Выбранная дата
+ * @returns {string} Текст сообщения
  */
 function getNoResultsMessage(searchTerm, dateInput) {
     const parts = [];
@@ -163,7 +165,10 @@ function getNoResultsMessage(searchTerm, dateInput) {
 }
 
 /**
- * Обновление статистики
+ * Обновляет статистику комбинированного фильтра
+ * @param {number} count - Количество найденных заявок
+ * @param {string} searchTerm - Поисковый запрос
+ * @param {string} dateInput - Выбранная дата
  */
 function updateCombinedStats(count, searchTerm, dateInput) {
     const statsElement = document.getElementById('allTableStats');
@@ -195,7 +200,9 @@ function updateCombinedStats(count, searchTerm, dateInput) {
 }
 
 /**
- * Форматирование даты для отображения
+ * Форматирует дату для отображения
+ * @param {string} dateString - Дата в формате YYYY-MM-DD
+ * @returns {string} Отформатированная дата
  */
 function formatDateDisplay(dateString) {
     const date = new Date(dateString);
@@ -208,7 +215,11 @@ function formatDateDisplay(dateString) {
 }
 
 /**
- * Проверка соответствия заявки поисковому запросу
+ * Проверяет соответствие заявки поисковому запросу
+ * Ищет во всех текстовых полях заявки
+ * @param {Object} application - Объект заявки
+ * @param {string} searchTerm - Поисковый запрос
+ * @returns {boolean} true если найдено совпадение
  */
 function matchesSearch(application, searchTerm) {
     const fields = [
@@ -226,7 +237,25 @@ function matchesSearch(application, searchTerm) {
 }
 
 /**
- * Экспорт результатов комбинированного фильтра
+ * Показывает индикатор загрузки для комбинированного фильтра
+ */
+function showCombinedFilterLoading() {
+    const container = document.getElementById('allApplicationsTableContainer');
+    if (container) {
+        container.innerHTML = `
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Фильтрация...</span>
+                </div>
+                <p class="mt-2">Применение фильтров...</p>
+            </div>
+        `;
+    }
+}
+
+/**
+ * Экспортирует результаты комбинированного фильтра в Excel
+ * Создает временную форму для отправки данных на сервер
  */
 export function exportCombinedResults() {
     if (!state.searchResults || state.searchResults.length === 0) {
@@ -247,7 +276,6 @@ export function exportCombinedResults() {
     searchResultsInput.value = JSON.stringify(ids);
     form.appendChild(searchResultsInput);
 
-    // Генерируем имя файла на основе фильтров
     let fileName = 'filtered_applications';
     if (state.currentSearchTerm) {
         fileName += `_${state.currentSearchTerm}`;
@@ -274,7 +302,8 @@ export function exportCombinedResults() {
 }
 
 /**
- * Сброс всех фильтров
+ * Сбрасывает все активные фильтры
+ * Очищает поля ввода и восстанавливает полный список заявок
  */
 export function clearAllFilters() {
     const searchInput = document.getElementById('searchAllTable');
@@ -283,7 +312,6 @@ export function clearAllFilters() {
     if (searchInput) searchInput.value = '';
     if (dateInput) dateInput.value = '';
 
-    // Сброс состояния
     state.currentSearchTerm = '';
     state.currentFilterDate = null;
     state.combinedFilterActive = false;
@@ -291,7 +319,6 @@ export function clearAllFilters() {
     state.isSearchActive = false;
     state.isDateFilterActive = false;
 
-    // Возврат к отображению всех заявок
     const container = document.getElementById('allApplicationsTableContainer');
     if (container) {
         container.innerHTML = `
@@ -304,7 +331,6 @@ export function clearAllFilters() {
         `;
     }
 
-    // Перезагрузка таблицы
     setTimeout(() => {
         state.allApplicationsCache = null;
         state.lastFetchTime = null;

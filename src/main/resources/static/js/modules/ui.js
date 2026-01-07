@@ -1,13 +1,12 @@
 // ============================================
 // МОДУЛЬ ПОЛЬЗОВАТЕЛЬСКОГО ИНТЕРФЕЙСА
-// ============================================
-
-// ============================================
-// ЭКСПОРТИРУЕМЫЕ ФУНКЦИИ
+// Функции для отображения сообщений и уведомлений
 // ============================================
 
 /**
- * Показать сообщение на основной странице
+ * Показывает сообщение на основной странице
+ * @param {string} text - Текст сообщения
+ * @param {string} type - Тип сообщения: 'info', 'success', 'warning', 'error'
  */
 export function showMessage(text, type = 'info') {
     const alertClass = type === 'error' ? 'danger' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : 'info';
@@ -20,7 +19,6 @@ export function showMessage(text, type = 'info') {
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     `;
 
-    // Добавляем перед формой
     const form = document.getElementById('applicationForm');
     if (!form) return;
 
@@ -33,7 +31,6 @@ export function showMessage(text, type = 'info') {
         form.parentNode.insertBefore(alertDiv, form);
     }
 
-    // Автоматически скрываем через 5 секунд
     setTimeout(() => {
         if (alertDiv.parentNode) {
             const bsAlert = new bootstrap.Alert(alertDiv);
@@ -43,13 +40,14 @@ export function showMessage(text, type = 'info') {
 }
 
 /**
- * Показать сообщение в модальном окне
+ * Показывает сообщение внутри модального окна
+ * @param {string} text - Текст сообщения
+ * @param {string} type - Тип сообщения: 'info', 'success', 'warning', 'error'
  */
 export function showMessageInModal(text, type = 'info') {
     const alertClass = type === 'error' ? 'danger' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : 'info';
     const icon = type === 'error' ? 'exclamation-circle' : type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle';
 
-    // Удаляем предыдущие сообщения
     const existingAlerts = document.querySelectorAll('#issuesTreeModal .alert');
     existingAlerts.forEach(alert => alert.remove());
 
@@ -60,13 +58,11 @@ export function showMessageInModal(text, type = 'info') {
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     `;
 
-    // Добавляем в начало тела модального окна
     const modalBody = document.querySelector('#issuesTreeModal .modal-body');
     if (!modalBody) return;
 
     modalBody.insertBefore(alertDiv, modalBody.firstChild);
 
-    // Автоматически скрываем через 3 секунды
     setTimeout(() => {
         if (alertDiv.parentNode) {
             const bsAlert = new bootstrap.Alert(alertDiv);
@@ -76,16 +72,16 @@ export function showMessageInModal(text, type = 'info') {
 }
 
 /**
- * Функция для показа уведомления о копировании
+ * Показывает уведомление о копировании в буфер обмена
+ * @param {string} message - Текст уведомления
+ * @param {string} type - Тип уведомления: 'success' или 'error'
  */
 export function showCopyNotification(message, type = 'success') {
-    // Удаляем предыдущее уведомление, если есть
     const existingNotification = document.getElementById('copyNotification');
     if (existingNotification) {
         existingNotification.remove();
     }
 
-    // Создаем новое уведомление
     const notification = document.createElement('div');
     notification.id = 'copyNotification';
     notification.className = `copy-notification ${type === 'error' ? 'error' : ''}`;
@@ -94,10 +90,8 @@ export function showCopyNotification(message, type = 'success') {
         <span>${message}</span>
     `;
 
-    // Добавляем на страницу
     document.body.appendChild(notification);
 
-    // Автоматически удаляем через 3 секунды
     setTimeout(() => {
         if (notification.parentNode) {
             notification.remove();
@@ -106,10 +100,11 @@ export function showCopyNotification(message, type = 'success') {
 }
 
 /**
- * Функция для показа временных сообщений
+ * Показывает временное сообщение в правом верхнем углу экрана
+ * @param {string} text - Текст сообщения
+ * @param {string} type - Тип сообщения: 'info', 'success', 'error'
  */
 export function showTempMessage(text, type) {
-    // Создаем контейнер для сообщений, если его нет
     let messageContainer = document.getElementById('tempMessageContainer');
     if (!messageContainer) {
         messageContainer = document.createElement('div');
@@ -124,7 +119,6 @@ export function showTempMessage(text, type) {
         document.body.appendChild(messageContainer);
     }
 
-    // Создаем сообщение
     const message = document.createElement('div');
     const alertClass = type === 'error' ? 'danger' : type === 'success' ? 'success' : 'info';
     message.className = `alert alert-${alertClass} alert-dismissible fade show`;
@@ -134,10 +128,8 @@ export function showTempMessage(text, type) {
         <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
     `;
 
-    // Добавляем в контейнер
     messageContainer.appendChild(message);
 
-    // Удаляем через 5 секунд
     setTimeout(() => {
         if (message.parentNode) {
             message.remove();

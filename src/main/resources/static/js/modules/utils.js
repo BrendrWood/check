@@ -1,15 +1,14 @@
 // ============================================
 // МОДУЛЬ УТИЛИТ И ВСПОМОГАТЕЛЬНЫХ ФУНКЦИЙ
+// Общие вспомогательные функции для приложения
 // ============================================
 
 import { CSS_CLASSES } from '../config.js';
 
-// ============================================
-// ЭКСПОРТИРУЕМЫЕ ФУНКЦИИ
-// ============================================
-
 /**
- * Форматирование времени
+ * Форматирует время из строки в читаемый формат
+ * @param {string} dateTimeString - Строка с датой и временем
+ * @returns {string} Отформатированное время в формате "ЧЧ:ММ"
  */
 export function formatTime(dateTimeString) {
     if (!dateTimeString) return '';
@@ -18,7 +17,9 @@ export function formatTime(dateTimeString) {
 }
 
 /**
- * Форматирование даты для отображения
+ * Форматирует дату для отображения с учетом относительного времени
+ * @param {string} dateString - Строка с датой
+ * @returns {string} Отформатированная дата (Сегодня/Вчера/полная дата)
  */
 export function formatDateForDisplay(dateString) {
     if (dateString === 'Без даты') return dateString;
@@ -43,14 +44,17 @@ export function formatDateForDisplay(dateString) {
 }
 
 /**
- * Экранирование спецсимволов в регулярных выражениях
+ * Экранирует специальные символы для использования в регулярных выражениях
+ * @param {string} string - Исходная строка
+ * @returns {string} Экранированная строка
  */
 export function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 /**
- * Прикрепление обработчиков для строк таблицы
+ * Прикрепляет обработчики событий к строкам таблицы
+ * Обрабатывает двойной клик для загрузки заявки и клик для выделения
  */
 export function attachTableRowHandlers() {
     const rows = document.querySelectorAll('.app-row');

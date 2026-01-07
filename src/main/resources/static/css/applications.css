@@ -1538,7 +1538,7 @@ hr {
 .date-radio-scroll-container {
     position: relative;
     width: 100%;
-    height: 60px;
+    height: 50px;
     margin-bottom: 15px;
     overflow: hidden;
 }
@@ -1610,4 +1610,141 @@ hr {
 /* Анимация открытия групп дат */
 .date-content {
     animation: fadeIn 0.3s ease;
+}
+
+/* ============================================
+   РАДИО-ПРОКРУТКА ДАТ (обновленные стили)
+   ============================================ */
+
+.date-radio-scroll-container {
+    position: relative;
+    width: 100%;
+    height: 48px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.date-radio-scroll {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 0 35%; /* Уменьшили отступы для центрирования */
+    cursor: grab;
+    -webkit-overflow-scrolling: touch;
+}
+
+.date-radio-scroll:active {
+    cursor: grabbing;
+}
+
+.date-radio-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.date-radio-chip {
+    flex: 0 0 auto;
+    padding: 4px 10px; /* Уменьшили padding */
+    margin: 0 6px; /* Уменьшили отступы между кнопками */
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6; /* Более тонкая рамка */
+    border-radius: 16px; /* Немного меньше радиус */
+    font-size: 0.75em; /* Уменьшили текст */
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    font-weight: 500;
+    color: #495057;
+    user-select: none;
+    -webkit-user-select: none;
+    min-height: 28px; /* Минимальная высота */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.date-radio-chip:hover {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.date-radio-chip.active {
+    background-color: #0d6efd;
+    color: white;
+    border-color: #0d6efd;
+    opacity: 1;
+    transform: scale(1.05) translateY(-1px); /* Уменьшили масштаб */
+    box-shadow: 0 3px 6px rgba(13, 110, 253, 0.25); /* Меньшая тень */
+    font-weight: 600;
+}
+
+.date-radio-chip.near-center {
+    opacity: 0.8;
+    transform: scale(1.02);
+    background-color: #e7f1ff;
+    border-color: #b3d4fc;
+}
+
+/* Индикатор центра (более заметный) */
+.date-radio-center-marker {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px; /* Тоньше */
+    background: linear-gradient(to bottom, rgba(13, 110, 253, 0.5), transparent);
+    transform: translateX(-50%);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.date-radio-center-marker::before {
+    content: '';
+    position: absolute;
+    top: 2px; /* Ближе к верху */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px; /* Меньше */
+    height: 8px; /* Меньше */
+    background-color: #0d6efd;
+    border-radius: 50%;
+}
+
+.date-radio-chip.compact {
+    padding: 3px 8px;
+    font-size: 0.7em;
+    margin: 0 4px;
+    min-height: 24px;
+}
+
+@media (max-width: 768px) {
+    .date-radio-scroll-container {
+        height: 42px; /* Еще меньше на мобильных */
+    }
+
+    .date-radio-scroll {
+        padding: 0 30%;
+    }
+
+    .date-radio-chip {
+        padding: 3px 8px;
+        font-size: 0.7em;
+        margin: 0 4px;
+        min-height: 24px;
+    }
+}
+
+/* Убираем старые кнопки управления */
+.date-radio-controls {
+    display: none !important;
+}
+
+.month-pagination {
+    display: none !important;
 }

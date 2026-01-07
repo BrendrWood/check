@@ -1,28 +1,28 @@
 // ============================================
 // УТИЛИТЫ ЭКСПОРТА
+// Вспомогательные функции для скачивания файлов
 // ============================================
 
 import { showTempMessage } from './ui.js';
 
 /**
- * Универсальная функция для скачивания файла
+ * Универсальная функция для скачивания файла через скрытый iframe
+ * @param {string} url - URL для скачивания файла
+ * @param {string} filename - Имя файла для сохранения
  */
 export function downloadFile(url, filename) {
-    // Создаем скрытый iframe (самый надежный способ)
     const iframe = document.createElement('iframe');
     iframe.style.display = 'none';
     iframe.style.position = 'absolute';
     iframe.style.left = '-9999px';
     iframe.name = 'downloadFrame_' + Date.now();
 
-    // Обработчик загрузки
     iframe.onload = function() {
         setTimeout(() => {
             try {
                 const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
                 const bodyText = iframeDoc.body ? iframeDoc.body.textContent || iframeDoc.body.innerText : '';
 
-                // Проверяем ошибки сервера
                 if (bodyText.includes('Ошибка') ||
                     bodyText.includes('Нет заявок') ||
                     bodyText.includes('Неверный формат')) {
@@ -32,11 +32,9 @@ export function downloadFile(url, filename) {
                     showTempMessage('Файл успешно скачан', 'success');
                 }
             } catch (e) {
-                // Если не можем получить содержимое - значит файл скачался
                 showTempMessage('Файл скачан', 'success');
             }
 
-            // Удаляем iframe
             setTimeout(() => {
                 if (iframe.parentNode) {
                     iframe.parentNode.removeChild(iframe);
@@ -45,7 +43,6 @@ export function downloadFile(url, filename) {
         }, 1000);
     };
 
-    // Обработчик ошибок
     iframe.onerror = function() {
         console.error('Ошибка загрузки файла');
         showTempMessage('Ошибка при загрузке файла', 'error');
@@ -59,7 +56,6 @@ export function downloadFile(url, filename) {
 
     document.body.appendChild(iframe);
 
-    // Формируем HTML для загрузки
     const html = `
         <!DOCTYPE html>
         <html>
@@ -79,7 +75,9 @@ export function downloadFile(url, filename) {
 }
 
 /**
- * Экспорт по дате через POST запрос (обход проблемы с файлом)
+ * Экспортирует заявки по дате через POST запрос
+ * Используется для обхода проблем с загрузкой файлов
+ * @param {string} date - Дата для экспорта
  */
 export function exportByDateViaPost(date) {
     if (!date) {
@@ -87,21 +85,18 @@ export function exportByDateViaPost(date) {
         return;
     }
 
-    // Создаем форму для POST запроса
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = '/api/applications/export/date';
     form.style.display = 'none';
     form.target = '_blank';
 
-    // Добавляем дату
     const dateInput = document.createElement('input');
     dateInput.type = 'hidden';
     dateInput.name = 'date';
     dateInput.value = date;
     form.appendChild(dateInput);
 
-    // Добавляем случайный токен для уникальности
     const tokenInput = document.createElement('input');
     tokenInput.type = 'hidden';
     tokenInput.name = 'token';
@@ -111,7 +106,6 @@ export function exportByDateViaPost(date) {
     document.body.appendChild(form);
     form.submit();
 
-    // Удаляем форму через некоторое время
     setTimeout(() => {
         if (form.parentNode) {
             form.parentNode.removeChild(form);
