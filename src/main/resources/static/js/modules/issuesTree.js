@@ -110,6 +110,9 @@ const issuesTree = {
         "нет информации о наклейке",
         "публичное наименование в заявке не соответствует вывеске",
         "не указана причина, по которой не подключен интернет",
+        "на объекте собака",
+        "на объекте кошка",
+        "на объекте робот-пылесос",
         "доки ок",
         "доки позже"
     ]
@@ -494,7 +497,13 @@ export function setupIssuesTreeHandlers() {
     const issuesTreeModal = document.getElementById('issuesTreeModal');
     if (issuesTreeModal) {
         issuesTreeModal.addEventListener('hidden.bs.modal', function() {
-            clearSelectedIssues();
+            // Тихое очищение выбора без показа сообщения
+            const selectedButtons = document.querySelectorAll(`.${ISSUES_TREE_CONFIG.ISSUE_BUTTON_CLASS}.${CSS_CLASSES.ADDED}`);
+            selectedButtons.forEach(button => {
+                button.classList.remove(CSS_CLASSES.ADDED);
+            });
+            state.selectedIssues.clear();
+            updateSelectedIssuesInfo();
         });
     }
 
@@ -520,8 +529,14 @@ export function openIssuesTreeModal() {
     if (commentsField) {
         const currentComments = commentsField.value;
 
-        clearSelectedIssues();
+        // Тихое очищение выбора без показа сообщения
+        const selectedButtons = document.querySelectorAll(`.${ISSUES_TREE_CONFIG.ISSUE_BUTTON_CLASS}.${CSS_CLASSES.ADDED}`);
+        selectedButtons.forEach(button => {
+            button.classList.remove(CSS_CLASSES.ADDED);
+        });
+        state.selectedIssues.clear();
 
+        // Синхронизация с существующими комментариями
         const issueButtons = document.querySelectorAll(`.${ISSUES_TREE_CONFIG.ISSUE_BUTTON_CLASS}`);
         issueButtons.forEach(button => {
             const issueText = button.dataset.issue;

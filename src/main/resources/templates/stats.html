@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Статистика инженеров</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        body { padding: 20px; background: #f8f9fa; }
+        .stats-card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .engineer-row { margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
+        .progress { height: 25px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="stats-card">
+        <h1 class="mb-4">
+            <i class="bi bi-graph-up text-warning"></i> Статистика инженеров
+        </h1>
+
+        <div class="alert alert-info mb-4">
+            <i class="bi bi-info-circle"></i>
+            Коэффициент рассчитывается по последним 20 заявкам каждого инженера.
+            <strong>10 = все заявки прошли проверку с первого раза</strong> (резолюция OK).
+        </div>
+
+        <div id="stats-content">
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Загрузка...</span>
+                </div>
+                <p class="mt-2">Загрузка статистики...</p>
+            </div>
+        </div>
+
+        <div class="mt-4 text-end">
+            <a href="/applications" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Назад к заявкам
+            </a>
+            <button onclick="window.print()" class="btn btn-primary ms-2">
+                <i class="bi bi-printer"></i> Печать
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Загружаем статистику
+    fetch('/api/applications/stats/engineers')
+        .then(response => response.json())
+        .then(data => {
+            displayStats(data);
+        })
+        .catch(error => {
+            document.getElementById('stats-content').innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    Ошибка загрузки: ${error.message}
+                </div>
+            `;
+        });
+
+    function displayStats(stats) {
+        if (!stats || stats.length === 0) {
+            document.getElementById('stats-content').innerHTML = `
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-circle"></i>
+                    Нет данных для отображения.
+                </div>
+            `;
+            return;
+        }
+
+        let html = '<div class="table-responsive"><table class="table table-hover">';
+        html += `
+            <thead class="table-light">
+                <tr>
+                    <th>Инженер</th>
+                    <th>Коэффициент</th>
+                    <th>Успешные</th>
+                    <th>Всего</th>
+                    <th>Процент</th>
+                </tr>
+            </thead>
+            <tbody>
+        `;
+
+        stats.forEach(engineer => {
+            const rate = engineer.successRate || 0;
+            const percent = (rate / 10 * 100).toFixed(1);
+            let badgeClass = 'bg-secondary';
+
+            if (rate >= 8) badgeClass = 'bg-success';
+            else if (rate >= 5) badgeClass = 'bg-warning';
+            else if (rate > 0) badgeClass = 'bg-danger';
+
+            html += `
+                <tr>
+                    <td><strong>${engineer.engineer || 'Не указан'}</strong></td>
+                    <td><span class="badge ${badgeClass} fs-6">${rate.toFixed(1)}/10</span></td>
+                    <td>${engineer.successCount || 0}</td>
+                    <td>${engineer.totalApplications || 0}</td>
+                    <td>
+                        <div class="progress">
+                            <div class="progress-bar ${badgeClass}" style="width: ${percent}%">
+                                ${percent}%
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+
+        html += '</tbody></table></div>';
+
+        document.getElementById('stats-content').innerHTML = html;
+    }
+</script>
+</body>
+</html>

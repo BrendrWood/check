@@ -1725,7 +1725,7 @@ hr {
 
 @media (max-width: 768px) {
     .date-radio-scroll-container {
-        height: 42px; /* Еще меньше на мобильных */
+        height: 42px;
     }
 
     .date-radio-scroll {
@@ -1747,4 +1747,8 @@ hr {
 
 .month-pagination {
     display: none !important;
+}
+
+.btn-warning {
+background-color: #ffffff;
 }

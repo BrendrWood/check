@@ -32,6 +32,9 @@ public class ApplicationController {
     @Autowired
     private ObjectMapper objectMapper; // Добавляем ObjectMapper
 
+    @Autowired
+    private StatisticsService statisticsService;
+
     // ============================================
     // CRUD ОПЕРАЦИИ ДЛЯ ЗАЯВОК
     // ============================================
@@ -102,6 +105,19 @@ public class ApplicationController {
     @GetMapping("/stats/{date}")
     public Long getStatsByDate(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         return applicationRepository.countByDate(date);
+    }
+
+    // GET: Статистика по инженерам
+    @GetMapping("/stats/engineers")
+    public ResponseEntity<?> getEngineerStats() {
+        try {
+            // Простая проверка роли (можно улучшить)
+            // Для тестирования пока возвращаем всем
+            List<StatisticsService.EngineerStats> stats = statisticsService.getEngineerSuccessRates();
+            return ResponseEntity.ok(stats);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Ошибка: " + e.getMessage());
+        }
     }
 
     // POST: Создание новой заявки
