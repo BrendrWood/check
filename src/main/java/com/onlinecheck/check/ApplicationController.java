@@ -377,7 +377,7 @@ public class ApplicationController {
         }
     }
 
-    // POST: Экспорт по дате (новый метод)
+    // POST: Экспорт по дате
     @PostMapping("/export/by-date")
     public void exportByDate(@RequestParam String date,
                              @RequestParam(required = false) String ids,

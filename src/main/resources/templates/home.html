@@ -19,11 +19,22 @@
             border-radius: 15px;
             padding: 40px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 450px;
+            max-width: 400px;
             width: 100%;
         }
         .alert {
             margin-bottom: 20px;
+        }
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .remember-me input {
+            margin-right: 8px;
+        }
+        .auto-login-btn {
+            margin-bottom: 15px;
         }
     </style>
 </head>
@@ -42,57 +53,156 @@
         ❌ Ошибка входа. Проверьте логин и пароль.
     </div>
 
-    <!-- ВАЖНО: форма ДОЛЖНА отправляться на /login методом POST -->
-    <!-- И поля ДОЛЖНЫ называться username и password -->
-    <form th:action="@{/login}" method="POST">
+    <!-- Форма входа -->
+    <form id="loginForm" th:action="@{/login}" method="POST">
         <div class="mb-3">
             <label for="username" class="form-label">Логин</label>
             <input type="text" class="form-control" id="username" name="username"
                    placeholder="Введите логин" required autofocus>
         </div>
 
-        <div class="mb-4">
+        <div class="mb-3">
             <label for="password" class="form-label">Пароль</label>
             <input type="password" class="form-control" id="password" name="password"
                    placeholder="Введите пароль" required>
         </div>
 
-        <!-- Ключевая кнопка -->
-        <button type="submit" class="btn btn-primary w-100 btn-lg mb-3">
+        <!-- Чекбокс "Запомнить меня" -->
+        <div class="remember-me">
+            <input type="checkbox" id="remember-me" name="remember-me" value="true">
+            <label for="remember-me" class="form-check-label">
+                Запомнить меня
+            </label>
+        </div>
+
+        <!-- Кнопка входа -->
+        <button type="submit" class="btn btn-primary w-100 btn-lg">
             Войти в систему
         </button>
-
-        <!-- Эта ссылка для информации - не удаляйте её из формы! -->
-        <a href="/applications" class="btn btn-outline-secondary w-100" onclick="return showLoginMessage()">
-            Перейти к заявкам (требуется вход)
-        </a>
-
-        <div class="mt-4 pt-3 border-top">
-            <h6 class="text-muted mb-2">Тестовые доступы:</h6>
-            <div class="small text-muted">
-                <div class="mb-1">
-                    <strong>Инженер 1:</strong> engineer1 / password1
-                </div>
-                <div class="mb-1">
-                    <strong>Инженер 2:</strong> engineer2 / password2
-                </div>
-                <div>
-                    <strong>Начальник:</strong> boss / boss123
-                </div>
-            </div>
-        </div>
     </form>
 </div>
 
 <script>
-    // Предупреждение при клике на "Перейти к заявкам"
-    function showLoginMessage() {
-        alert('Для доступа к заявкам необходимо войти в систему. Используйте форму выше.');
-        return false; // Отменяем переход
+    // Ключ для хранения в localStorage
+    const STORAGE_KEY = 'onlinecheck_credentials';
+
+    // Функция для сохранения логина и пароля
+    function saveCredentials(username, password, remember) {
+        if (remember && username && password) {
+            const credentials = {
+                username: username,
+                password: password,
+                timestamp: new Date().getTime()
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(credentials));
+        } else {
+            localStorage.removeItem(STORAGE_KEY);
+        }
     }
 
-    // Автофокус на поле логина
-    document.getElementById('username').focus();
+    // Функция для загрузки логина и пароля
+    function loadCredentials() {
+        try {
+            const data = localStorage.getItem(STORAGE_KEY);
+            if (data) {
+                const credentials = JSON.parse(data);
+
+                // Проверяем, не старые ли данные (больше 30 дней)
+                const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+                const isOld = (new Date().getTime() - credentials.timestamp) > thirtyDays;
+
+                if (!isOld && credentials.username && credentials.password) {
+                    document.getElementById('username').value = credentials.username;
+                    document.getElementById('password').value = credentials.password;
+                    document.getElementById('remember-me').checked = true;
+                    return credentials.username;
+                } else if (isOld) {
+                    localStorage.removeItem(STORAGE_KEY);
+                }
+            }
+        } catch (e) {
+            console.error('Ошибка загрузки данных:', e);
+        }
+        return null;
+    }
+
+    // Функция для создания кнопки автоматического входа
+    function createAutoLoginButton(username) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'btn btn-success w-100 btn-lg auto-login-btn';
+        button.innerHTML = `Войти как <strong>${username}</strong>`;
+        button.onclick = function() {
+            document.getElementById('loginForm').submit();
+        };
+
+        // Вставляем перед формой
+        const form = document.getElementById('loginForm');
+        form.parentNode.insertBefore(button, form);
+
+        // Добавляем кнопку "Другой пользователь"
+        const clearButton = document.createElement('button');
+        clearButton.type = 'button';
+        clearButton.className = 'btn btn-outline-secondary w-100 mb-3';
+        clearButton.textContent = 'Войти другим пользователем';
+        clearButton.onclick = clearCredentials;
+        form.parentNode.insertBefore(clearButton, form);
+    }
+
+    // Функция для очистки сохраненных данных
+    function clearCredentials() {
+        localStorage.removeItem(STORAGE_KEY);
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+        document.getElementById('remember-me').checked = false;
+        location.reload();
+    }
+
+    // При загрузке страницы
+    document.addEventListener('DOMContentLoaded', function() {
+        // Пытаемся загрузить сохраненные данные
+        const savedUsername = loadCredentials();
+        if (savedUsername) {
+            createAutoLoginButton(savedUsername);
+            document.getElementById('password').focus();
+        }
+
+        // Сохранение при изменении полей
+        document.getElementById('username').addEventListener('input', updateStorage);
+        document.getElementById('password').addEventListener('input', updateStorage);
+        document.getElementById('remember-me').addEventListener('change', updateStorage);
+
+        // Сохранение при отправке формы
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const remember = document.getElementById('remember-me').checked;
+            saveCredentials(username, password, remember);
+        });
+    });
+
+    // Обновление сохраненных данных
+    function updateStorage() {
+        const remember = document.getElementById('remember-me').checked;
+        if (remember) {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            if (username && password) {
+                saveCredentials(username, password, true);
+            }
+        }
+    }
+
+    // Сохранение данных перед закрытием страницы
+    window.addEventListener('beforeunload', function() {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const remember = document.getElementById('remember-me').checked;
+
+        if (username && password && remember) {
+            saveCredentials(username, password, true);
+        }
+    });
 </script>
 </body>
 </html>

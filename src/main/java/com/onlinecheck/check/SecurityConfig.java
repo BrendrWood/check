@@ -16,27 +16,41 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private static final String REMEMBER_ME_KEY = "online-check-secret-key-2026";
+
     @Bean
     public UserDetailsService userDetailsService() {
-        UserDetails engineer1 = User.builder()
-                .username("engineer1")
-                .password(passwordEncoder().encode("password1"))
+        UserDetails kholmikangas = User.builder()
+                .username("kholmikangas")
+                .password(passwordEncoder().encode("onlinecheck1"))
                 .roles("ENGINEER")
                 .build();
 
-        UserDetails engineer2 = User.builder()
-                .username("engineer2")
-                .password(passwordEncoder().encode("password2"))
+        UserDetails bystryukov = User.builder()
+                .username("bystryukov")
+                .password(passwordEncoder().encode("onlinecheck2"))
                 .roles("ENGINEER")
                 .build();
 
-        UserDetails boss = User.builder()
-                .username("boss")
+        UserDetails tebin = User.builder()
+                .username("tebin")
+                .password(passwordEncoder().encode("onlinecheck3"))
+                .roles("ENGINEER")
+                .build();
+
+        UserDetails guest = User.builder()
+                .username("guest")
+                .password(passwordEncoder().encode("onlinecheck4"))
+                .roles("ENGINEER")
+                .build();
+
+        UserDetails balakin = User.builder()
+                .username("balakin")
                 .password(passwordEncoder().encode("boss123"))
                 .roles("BOSS")
                 .build();
 
-        return new InMemoryUserDetailsManager(engineer1, engineer2, boss);
+        return new InMemoryUserDetailsManager(kholmikangas, bystryukov, tebin, guest, balakin);
     }
 
     @Bean
@@ -47,40 +61,41 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // 1. Настройка доступа
                 .authorizeHttpRequests(auth -> auth
-                        // Разрешаем всё статическое И /login (GET и POST!)
                         .requestMatchers("/", "/login", "/css/**", "/js/**", "/images/**").permitAll()
-                        // H2 Console для разработки
                         .requestMatchers("/h2-console/**").permitAll()
-                        // ВСЕ остальные запросы требуют логина
+                        .requestMatchers("/api/**").authenticated()  // API требует аутентификации
                         .anyRequest().authenticated()
                 )
 
-                // 2. Ключевое: ОТКЛЮЧАЕМ стандартную форму логина Spring
                 .formLogin(form -> form
-                        .loginPage("/")                    // Используем главную страницу как форму логина
-                        .loginProcessingUrl("/login")      // URL для обработки POST запроса
-                        .defaultSuccessUrl("/applications", true)  // После успешного логина
-                        .failureUrl("/?error=true")        // При ошибке
-                        .usernameParameter("username")     // Имя поля логина (по умолчанию так и есть)
-                        .passwordParameter("password")     // Имя поля пароля (по умолчанию так и есть)
+                        .loginPage("/")
+                        .loginProcessingUrl("/login")
+                        .defaultSuccessUrl("/applications", true)
+                        .failureUrl("/?error=true")
                         .permitAll()
                 )
 
-                // 3. Отключаем CSRF для удобства тестирования (потом включить!)
-                .csrf(csrf -> csrf.disable())
+                // ВАЖНО: Отключаем CSRF для REST API (обычная практика)
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/h2-console/**", "/api/**")  // API без CSRF
+                )
 
-                // 4. Логаут
+                .rememberMe(remember -> remember
+                        .key(REMEMBER_ME_KEY)
+                        .rememberMeParameter("remember-me")
+                        .tokenValiditySeconds(365 * 24 * 60 * 60)
+                        .userDetailsService(userDetailsService())
+                )
+
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/?logout=true")
                         .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
+                        .deleteCookies("JSESSIONID", "remember-me")
                         .permitAll()
                 )
 
-                // 5. Для H2 Console
                 .headers(headers -> headers
                         .frameOptions(frame -> frame.sameOrigin())
                 );

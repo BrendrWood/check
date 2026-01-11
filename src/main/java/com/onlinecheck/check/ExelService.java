@@ -27,11 +27,11 @@ public class ExelService {
 
         // Создаем стили
         CellStyle headerStyle = createHeaderStyle(workbook);
-        CellStyle yellowHeaderStyle = createYellowHeaderStyle(workbook);
         CellStyle booleanStyle = createBooleanStyle(workbook);
         CellStyle centerStyle = createCenterStyle(workbook);
         CellStyle wrapStyle = createWrapStyle(workbook);
         CellStyle resolutionStyle = createResolutionStyle(workbook);
+        CellStyle engineerCellStyle = createEngineerCellStyle(workbook);
 
         // Создаем заголовки столбцов
         Row headerRow = sheet.createRow(0);
@@ -43,13 +43,13 @@ public class ExelService {
                 "Причина, по которой не подключен интернет",
                 "МПК",
                 "Высокий потолок",
-                "Уровень связи датчиков с КП",       // ЖЕЛТЫЙ
-                "Животные или пылесос",               // ЖЕЛТЫЙ
-                "Ночной режим",                       // ЖЕЛТЫЙ
-                "Датчики по экспертизе",              // ЖЕЛТЫЙ
+                "Уровень связи датчиков с КП",
+                "Животные или пылесос",
+                "Ночной режим",
+                "Датчики по экспертизе",
                 "Наклейка",
                 "Акт работ",
-                "Фото объекта",
+                "Фото объекта, КП, КЛ, СИМ",
                 "Поэтажный план",
                 "Форма 002",
                 "ПУД и договор",
@@ -62,20 +62,11 @@ public class ExelService {
                 "Резолюция"
         };
 
-        // Индексы колонок для желтой подсветки
-        int[] yellowColumns = {7, 8, 9, 10}; // Уровень связи датчиков, Животные, Ночной режим, Датчики по экспертизе
-
         // Заполняем заголовки
         for (int i = 0; i < headers.length; i++) {
             Cell cell = headerRow.createCell(i);
             cell.setCellValue(headers[i]);
-
-            // Применяем желтый стиль для указанных колонок
-            if (contains(yellowColumns, i)) {
-                cell.setCellStyle(yellowHeaderStyle);
-            } else {
-                cell.setCellStyle(headerStyle);
-            }
+            cell.setCellStyle(headerStyle); // Все заголовки серые
         }
 
         // Добавляем данные
@@ -85,7 +76,7 @@ public class ExelService {
 
             // Основные данные (строки)
             createCell(row, 0, app.getApplicationNumber(), centerStyle);
-            createCell(row, 1, app.getEngineer(), centerStyle);
+            createCell(row, 1, app.getEngineer(), engineerCellStyle);
             createCell(row, 2, app.getGsmLevel(), centerStyle);
             createCell(row, 3, app.getInternetLevel(), centerStyle);
             createCell(row, 4, app.getInternetReason(), wrapStyle);
@@ -120,10 +111,10 @@ public class ExelService {
         // Булевые колонки (5-19, 23) - узкие
         sheet.setColumnWidth(5, 1500);   // МПК
         sheet.setColumnWidth(6, 1500);   // Высокий потолок
-        sheet.setColumnWidth(7, 2500);   // Уровень связи датчиков с КП (желтый)
-        sheet.setColumnWidth(8, 2000);   // Животные или пылесос (желтый)
-        sheet.setColumnWidth(9, 1500);   // Ночной режим (желтый)
-        sheet.setColumnWidth(10, 2000);  // Датчики по экспертизе (желтый)
+        sheet.setColumnWidth(7, 2500);   // Уровень связи датчиков с КП
+        sheet.setColumnWidth(8, 2000);   // Животные или пылесос
+        sheet.setColumnWidth(9, 1500);   // Ночной режим
+        sheet.setColumnWidth(10, 2000);  // Датчики по экспертизе
         sheet.setColumnWidth(11, 1500);  // Наклейка
         sheet.setColumnWidth(12, 1500);  // Акт работ
         sheet.setColumnWidth(13, 1500);  // Фото объекта
@@ -139,7 +130,7 @@ public class ExelService {
 
         // Основные колонки - шире
         sheet.setColumnWidth(0, 2500);   // Номер заявки
-        sheet.setColumnWidth(1, 3500);   // Инженер
+        sheet.setColumnWidth(1, 7000);   // Инженер
         sheet.setColumnWidth(2, 2000);   // Уровень GSM
         sheet.setColumnWidth(3, 2000);   // Интернет
         sheet.setColumnWidth(4, 6000);   // Причина
@@ -188,16 +179,6 @@ public class ExelService {
         }
     }
 
-    // Проверка наличия значения в массиве
-    private boolean contains(int[] array, int value) {
-        for (int i : array) {
-            if (i == value) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     // Стиль для заголовков - обычный (серый)
     private CellStyle createHeaderStyle(Workbook workbook) {
         CellStyle style = workbook.createCellStyle();
@@ -206,25 +187,6 @@ public class ExelService {
         font.setFontHeightInPoints((short) 9);
         style.setFont(font);
         style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        style.setBorderBottom(BorderStyle.THIN);
-        style.setBorderTop(BorderStyle.THIN);
-        style.setBorderLeft(BorderStyle.THIN);
-        style.setBorderRight(BorderStyle.THIN);
-        style.setAlignment(HorizontalAlignment.CENTER);
-        style.setVerticalAlignment(VerticalAlignment.CENTER);
-        style.setWrapText(true);
-        return style;
-    }
-
-    // Стиль для заголовков - желтый (для важных колонок)
-    private CellStyle createYellowHeaderStyle(Workbook workbook) {
-        CellStyle style = workbook.createCellStyle();
-        Font font = workbook.createFont();
-        font.setBold(true);
-        font.setFontHeightInPoints((short) 9);
-        style.setFont(font);
-        style.setFillForegroundColor(IndexedColors.YELLOW.getIndex()); // ЖЕЛТЫЙ ЦВЕТ
         style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         style.setBorderBottom(BorderStyle.THIN);
         style.setBorderTop(BorderStyle.THIN);
@@ -288,6 +250,19 @@ public class ExelService {
         style.setBorderTop(BorderStyle.THIN);
         style.setBorderLeft(BorderStyle.THIN);
         style.setBorderRight(BorderStyle.THIN);
+        return style;
+    }
+
+    // Стиль для ячейки инженера - выравнивание по левому краю
+    private CellStyle createEngineerCellStyle(Workbook workbook) {
+        CellStyle style = workbook.createCellStyle();
+        style.setAlignment(HorizontalAlignment.LEFT);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
+        style.setBorderBottom(BorderStyle.THIN);
+        style.setBorderTop(BorderStyle.THIN);
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setBorderRight(BorderStyle.THIN);
+        style.setWrapText(true);
         return style;
     }
 }
