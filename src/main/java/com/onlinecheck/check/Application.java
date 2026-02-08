@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
  */
 
 @Entity
-
 @Table(name = "applications", uniqueConstraints = {
         @UniqueConstraint(columnNames = "applicationNumber") // Номер заявки ДОЛЖЕН быть уникальным
 }, indexes = {
@@ -37,6 +36,7 @@ public class Application {
     private String gsmLevel;          // Уровень сигнала GSM (например, "-75 dB")
     private String internetLevel;     // Уровень интернета
     private String internetReason;    // Почему не подключен интернет
+    private String equipmentReason;   // Почему не использовалось оборудование Б-ТМ
 
     // ПОЛЯ ТИПА boolean
     private boolean mpkInstalled;       // МПК установлен? (да/нет)
@@ -53,7 +53,7 @@ public class Application {
     private boolean docs;               // ПУД и договор есть? (да/нет)
     private boolean roadMap;            // Схема подъездных путей есть? (да/нет)
     private boolean publicName;         // Публичное наименование соответствует? (да/нет)
-    private boolean checkList;          // Чек-лист приложен? (да/нет)
+    private boolean rental;             // Аренда (МБ_АР_БА)? (да/нет) // ИЗМЕНЕНО с checkList на rental
 
     private String installationDate;    // Дата монтажа (например, "15.12.2024")
     private String inspector;           // Кто проверял заявку
@@ -120,6 +120,13 @@ public class Application {
     }
     public void setInternetReason(String internetReason) {
         this.internetReason = internetReason;
+    }
+
+    public String getEquipmentReason() {
+        return equipmentReason;
+    }
+    public void setEquipmentReason(String equipmentReason) {
+        this.equipmentReason = equipmentReason;
     }
 
     public boolean isMpkInstalled() {
@@ -220,11 +227,11 @@ public class Application {
         this.publicName = publicName;
     }
 
-    public boolean isCheckList() {
-        return checkList;
+    public boolean isRental() { // ИЗМЕНЕНО с isCheckList на isRental
+        return rental;
     }
-    public void setCheckList(boolean checkList) {
-        this.checkList = checkList;
+    public void setRental(boolean rental) { // ИЗМЕНЕНО с setCheckList на setRental
+        this.rental = rental;
     }
 
     public String getInstallationDate() {
