@@ -55,8 +55,8 @@ public class ExelService {
                 "ПУД и договор",
                 "Подъездные пути",
                 "Публичное имя",
-                "Аренда", // ИЗМЕНЕНО с "Чек-лист" на "Аренда"
-                "Причина, по которой не использовалось оборудование Б-ТМ", // ПЕРЕМЕЩЕНО: теперь между "Аренда" и "Дата монтажа"
+                "Аренда",
+                "Причина, по которой не использовалось оборудование Б-ТМ",
                 "Дата монтажа",
                 "Проверяющий",
                 "Комментарии",
@@ -81,7 +81,7 @@ public class ExelService {
             createCell(row, 2, app.getGsmLevel(), centerStyle);
             createCell(row, 3, app.getInternetLevel(), centerStyle);
             createCell(row, 4, app.getInternetReason(), wrapStyle);
-
+            
             // Булевые поля - преобразуем в "да"/"нет"
             createBooleanCell(row, 5, app.isMpkInstalled(), booleanStyle);
             createBooleanCell(row, 6, app.isHighCeiling(), booleanStyle);
@@ -97,10 +97,10 @@ public class ExelService {
             createBooleanCell(row, 16, app.isDocs(), booleanStyle);
             createBooleanCell(row, 17, app.isRoadMap(), booleanStyle);
             createBooleanCell(row, 18, app.isPublicName(), booleanStyle);
-            createBooleanCell(row, 19, app.isRental(), booleanStyle); // ИЗМЕНЕНО с isCheckList на isRental
-
+            createBooleanCell(row, 19, app.isRental(), booleanStyle); // ИЗМЕНЕНО: isCheckList() -> isRental()
+            
             // Новое поле после "Аренда"
-            createCell(row, 20, app.getEquipmentReason(), wrapStyle); // НОВОЕ ПОЛЕ ПЕРЕМЕЩЕНО сюда
+            createCell(row, 20, app.getEquipmentReason(), wrapStyle);
 
             // Остальные данные
             createCell(row, 21, app.getInstallationDate(), centerStyle);
@@ -127,7 +127,7 @@ public class ExelService {
         sheet.setColumnWidth(16, 1500);  // ПУД и договор
         sheet.setColumnWidth(17, 1800);  // Подъездные пути
         sheet.setColumnWidth(18, 1500);  // Публичное имя
-        sheet.setColumnWidth(19, 1500);  // Аренда (бывший Чек-лист)
+        sheet.setColumnWidth(19, 1500);  // Аренда
 
         // Столбец с причиной для оборудования Б-ТМ - шире
         sheet.setColumnWidth(20, 6000);  // Причина, по которой не использовалось оборудование Б-ТМ
@@ -177,7 +177,7 @@ public class ExelService {
         }
     }
 
-    // Метод для создания ячейки с резолюцией "ок"/"нок"
+    // Метод для создания ячейки с резолюции "ок"/"нок"
     private void createResolutionCell(Row row, int column, boolean value, CellStyle style) {
         Cell cell = row.createCell(column);
         cell.setCellValue(value ? "ок" : "нок");
