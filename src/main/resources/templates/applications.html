@@ -166,14 +166,12 @@
                             <input type="checkbox" class="form-check-input" th:field="*{publicName}" id="publicName">
                             <label class="form-check-label" for="publicName">Публичное наименование</label>
                         </div>
-                        <!-- Чекбокс checkList УДАЛЕН, ВМЕСТО НЕГО добавлен rent -->
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" th:field="*{rent}" id="rent">
                             <label class="form-check-label" for="rent">Аренда (МБ_АР_БА)</label>
                         </div>
                     </div>
 
-                    <!-- НОВОЕ ПОЛЕ: Причина, по которой не было использовано оборудование Б-ТМ -->
                     <div class="mb-2 autocomplete-container">
                         <label class="form-label">Причина, по которой не было использовано оборудование Б-ТМ</label>
                         <textarea th:field="*{rentReason}"
@@ -186,7 +184,7 @@
                         <div id="rentReasonAutocomplete" class="autocomplete-items"></div>
                     </div>
 
-                    <!-- Дата и инспектор -->
+                    <!-- Дата и проверяющий -->
                     <div class="row mb-2">
                         <div class="col-md-6">
                             <label class="form-label">Дата установки</label>
