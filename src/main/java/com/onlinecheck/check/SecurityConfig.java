@@ -62,23 +62,37 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/css/**", "/js/**", "/images/**").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/api/**").authenticated()  // API требует аутентификации
+                        // Разрешаем доступ без аутентификации
+                        .requestMatchers(
+                                "/", 
+                                "/login", 
+                                "/css/**", 
+                                "/js/**", 
+                                "/images/**",
+                                "/webjars/**",
+                                "/h2-console/**"
+                        ).permitAll()
+                        
+                        // API требует аутентификации
+                        .requestMatchers("/api/**").authenticated()
+                        
+                        // Страница приложения доступна всем аутентифицированным пользователям
+                        .requestMatchers("/applications/**").authenticated()
+                        
                         .anyRequest().authenticated()
                 )
 
                 .formLogin(form -> form
-                        .loginPage("/")
-                        .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/applications", true)
+                        .loginPage("/")  // Главная страница = страница логина
+                        .loginProcessingUrl("/perform_login")  // Изменяем URL для обработки логина
+                        .defaultSuccessUrl("/applications", true)  // После успешного логина -> /applications
                         .failureUrl("/?error=true")
                         .permitAll()
                 )
 
-                // ВАЖНО: Отключаем CSRF для REST API (обычная практика)
+                // Отключаем CSRF для REST API и H2 console
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/h2-console/**", "/api/**")  // API без CSRF
+                        .ignoringRequestMatchers("/h2-console/**", "/api/**")
                 )
 
                 .rememberMe(remember -> remember
@@ -89,7 +103,7 @@ public class SecurityConfig {
                 )
 
                 .logout(logout -> logout
-                        .logoutUrl("/logout")
+                        .logoutUrl("/perform_logout")
                         .logoutSuccessUrl("/?logout=true")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID", "remember-me")
