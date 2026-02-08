@@ -179,7 +179,7 @@ public class ApplicationController {
                     if (updatedApplication.getInspector() != null) {
                         existing.setInspector(updatedApplication.getInspector());
                     }
-                    if (updatedApplication.getRentReason() != null) {  // НОВОЕ ПОЛЕ
+                    if (updatedApplication.getRentReason() != null) {  
                         existing.setRentReason(updatedApplication.getRentReason());
                     }
                     if (updatedApplication.getComments() != null) {
