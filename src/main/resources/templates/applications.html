@@ -167,9 +167,21 @@
                             <label class="form-check-label" for="publicName">Публичное наименование</label>
                         </div>
                         <div class="form-check">
-                            <input type="checkbox" class="form-check-input" th:field="*{checkList}" id="checkList">
-                            <label class="form-check-label" for="checkList">Аренда (МБ_АР_БА)</label>
+                            <input type="checkbox" class="form-check-input" th:field="*{rental}" id="rental">
+                            <label class="form-check-label" for="rental">Аренда (МБ_АР_БА)</label>
                         </div>
+                    </div>
+
+                    <!-- НОВОЕ ПОЛЕ: Причина, по которой не использовалось оборудование Б-ТМ -->
+                    <div class="mb-2 autocomplete-container">
+                        <label class="form-label">Причина, по которой не использовалось оборудование Б-ТМ</label>
+                        <textarea th:field="*{equipmentReason}"
+                                  class="form-control"
+                                  rows="2"
+                                  maxlength="100"
+                                  id="equipmentReason"
+                                  autocomplete="off"></textarea>
+                        <div id="equipmentReasonAutocomplete" class="autocomplete-items"></div>
                     </div>
 
                     <!-- Дата и инспектор -->
@@ -370,7 +382,6 @@
     </div>
 </div>
 
-<!-- Модальное окно для таблицы всех заявок -->
 <!-- Модальное окно для таблицы всех заявок -->
 <div class="modal fade" id="allApplicationsModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-xl">
