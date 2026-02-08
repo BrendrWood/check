@@ -25,11 +25,20 @@ public class ApplicationWebController {
     }
 
     @GetMapping
-    public String showForm(Model model) {
-        if (!model.containsAttribute("application")) {
-            model.addAttribute("application", new Application());
+    public String showForm(Model model, Principal principal) {
+        System.out.println("DEBUG: Accessing /applications. User: " + 
+                          (principal != null ? principal.getName() : "anonymous"));
+        
+        try {
+            if (!model.containsAttribute("application")) {
+                model.addAttribute("application", new Application());
+            }
+            return "applications";
+        } catch (Exception e) {
+            System.err.println("ERROR in showForm: " + e.getMessage());
+            e.printStackTrace();
+            throw e; // Перебрасываем исключение дальше
         }
-        return "applications";
     }
 
     @PostMapping("/search")
