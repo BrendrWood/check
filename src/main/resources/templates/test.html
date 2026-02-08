@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Page</title>
+</head>
+<body>
+    <h1>Test Page Works!</h1>
+    <p>User: <span th:text="${#authentication.name}">Unknown</span></p>
+    <p>Current time: <span th:text="${#temporals.format(#temporals.createNow(), 'dd.MM.yyyy HH:mm')}"></span></p>
+    <a href="/logout">Logout</a>
+</body>
+</html>
