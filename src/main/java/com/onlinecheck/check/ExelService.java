@@ -55,7 +55,8 @@ public class ExelService {
                 "ПУД и договор",
                 "Подъездные пути",
                 "Публичное имя",
-                "Чек-лист",
+                "Аренда",  // ЗАМЕНА: было "Чек-лист"
+                "Причина, по которой не было использовано оборудование Б-ТМ",  // НОВАЯ КОЛОНКА
                 "Дата монтажа",
                 "Проверяющий",
                 "Комментарии",
@@ -96,19 +97,22 @@ public class ExelService {
             createBooleanCell(row, 16, app.isDocs(), booleanStyle);
             createBooleanCell(row, 17, app.isRoadMap(), booleanStyle);
             createBooleanCell(row, 18, app.isPublicName(), booleanStyle);
-            createBooleanCell(row, 19, app.isCheckList(), booleanStyle);
+            createBooleanCell(row, 19, app.isRent(), booleanStyle);  // ЗАМЕНА: было checkList, теперь rent
 
-            // Остальные данные
-            createCell(row, 20, app.getInstallationDate(), centerStyle);
-            createCell(row, 21, app.getInspector(), centerStyle);
-            createCell(row, 22, app.getComments(), wrapStyle);
+            // Новая причина
+            createCell(row, 20, app.getRentReason(), wrapStyle);  // НОВОЕ ПОЛЕ
+
+            // Остальные данные (сдвинуты на +1 из-за нового поля)
+            createCell(row, 21, app.getInstallationDate(), centerStyle);
+            createCell(row, 22, app.getInspector(), centerStyle);
+            createCell(row, 23, app.getComments(), wrapStyle);
 
             // Резолюция - преобразуем в "ок"/"нок"
-            createResolutionCell(row, 23, app.isResolution(), resolutionStyle);
+            createResolutionCell(row, 24, app.isResolution(), resolutionStyle);
         }
 
         // Устанавливаем фиксированные ширины для колонок
-        // Булевые колонки (5-19, 23) - узкие
+        // Булевые колонки (5-19, 24) - узкие
         sheet.setColumnWidth(5, 1500);   // МПК
         sheet.setColumnWidth(6, 1500);   // Высокий потолок
         sheet.setColumnWidth(7, 2500);   // Уровень связи датчиков с КП
@@ -123,20 +127,21 @@ public class ExelService {
         sheet.setColumnWidth(16, 1500);  // ПУД и договор
         sheet.setColumnWidth(17, 1800);  // Подъездные пути
         sheet.setColumnWidth(18, 1500);  // Публичное имя
-        sheet.setColumnWidth(19, 1500);  // Чек-лист
+        sheet.setColumnWidth(19, 1500);  // Аренда (ЗАМЕНА)
+        sheet.setColumnWidth(20, 6000);  // Причина аренды (НОВАЯ)
 
         // Резолюция
-        sheet.setColumnWidth(23, 1500);  // Резолюция
+        sheet.setColumnWidth(24, 1500);  // Резолюция (сдвинута)
 
-        // Основные колонки - шире
+        // Основные колонки - шире (сдвинуты)
         sheet.setColumnWidth(0, 2500);   // Номер заявки
         sheet.setColumnWidth(1, 7000);   // Инженер
         sheet.setColumnWidth(2, 2000);   // Уровень GSM
         sheet.setColumnWidth(3, 2000);   // Интернет
         sheet.setColumnWidth(4, 6000);   // Причина
-        sheet.setColumnWidth(20, 2500);  // Дата монтажа
-        sheet.setColumnWidth(21, 3500);  // Проверяющий
-        sheet.setColumnWidth(22, 8000);  // Комментарии
+        sheet.setColumnWidth(21, 2500);  // Дата монтажа (сдвинута)
+        sheet.setColumnWidth(22, 3500);  // Проверяющий (сдвинут)
+        sheet.setColumnWidth(23, 8000);  // Комментарии (сдвинуты)
 
         // Устанавливаем высоту строки для заголовков
         headerRow.setHeight((short)600); // Фиксированная высота для заголовков

@@ -53,10 +53,11 @@ public class Application {
     private boolean docs;               // ПУД и договор есть? (да/нет)
     private boolean roadMap;            // Схема подъездных путей есть? (да/нет)
     private boolean publicName;         // Публичное наименование соответствует? (да/нет)
-    private boolean checkList;          // Чек-лист приложен? (да/нет)
+    private boolean rent;               // Аренда (МБ_АР_БА)? (да/нет) - ЗАМЕНА checkList
 
     private String installationDate;    // Дата монтажа (например, "15.12.2024")
     private String inspector;           // Кто проверял заявку
+    private String rentReason;          // Причина, по которой не было использовано оборудование Б-ТМ - НОВОЕ ПОЛЕ
 
     @Column(length = 2000)
     private String comments; // Комментарии/замечания по заявке
@@ -220,11 +221,11 @@ public class Application {
         this.publicName = publicName;
     }
 
-    public boolean isCheckList() {
-        return checkList;
+    public boolean isRent() {
+        return rent;
     }
-    public void setCheckList(boolean checkList) {
-        this.checkList = checkList;
+    public void setRent(boolean rent) {
+        this.rent = rent;
     }
 
     public String getInstallationDate() {
@@ -239,6 +240,13 @@ public class Application {
     }
     public void setInspector(String inspector) {
         this.inspector = inspector;
+    }
+
+    public String getRentReason() {
+        return rentReason;
+    }
+    public void setRentReason(String rentReason) {
+        this.rentReason = rentReason;
     }
 
     public String getComments() {

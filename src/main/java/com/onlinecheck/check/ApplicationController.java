@@ -170,7 +170,7 @@ public class ApplicationController {
                     existing.setDocs(updatedApplication.isDocs());
                     existing.setRoadMap(updatedApplication.isRoadMap());
                     existing.setPublicName(updatedApplication.isPublicName());
-                    existing.setCheckList(updatedApplication.isCheckList());
+                    existing.setRent(updatedApplication.isRent());  // ЗАМЕНА: было setCheckList, теперь setRent
 
                     // Остальные поля
                     if (updatedApplication.getInstallationDate() != null) {
@@ -178,6 +178,9 @@ public class ApplicationController {
                     }
                     if (updatedApplication.getInspector() != null) {
                         existing.setInspector(updatedApplication.getInspector());
+                    }
+                    if (updatedApplication.getRentReason() != null) {  // НОВОЕ ПОЛЕ
+                        existing.setRentReason(updatedApplication.getRentReason());
                     }
                     if (updatedApplication.getComments() != null) {
                         existing.setComments(updatedApplication.getComments());
