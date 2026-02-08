@@ -53,11 +53,11 @@ public class Application {
     private boolean docs;               // ПУД и договор есть? (да/нет)
     private boolean roadMap;            // Схема подъездных путей есть? (да/нет)
     private boolean publicName;         // Публичное наименование соответствует? (да/нет)
-    private Boolean rent;               // Аренда (МБ_АР_БА)? (да/нет) - ЗАМЕНА checkList
+    private boolean rent;               // Аренда (МБ_АР_БА)? (да/нет)
 
     private String installationDate;    // Дата монтажа (например, "15.12.2024")
     private String inspector;           // Кто проверял заявку
-    private String rentReason;          // Причина, по которой не было использовано оборудование Б-ТМ - НОВОЕ ПОЛЕ
+    private String rentReason;          // Причина, по которой не было использовано оборудование Б-ТМ
 
     @Column(length = 2000)
     private String comments; // Комментарии/замечания по заявке
