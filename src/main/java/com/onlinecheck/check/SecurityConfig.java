@@ -62,7 +62,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        // Разрешаем доступ без аутентификации
+                        // Разрешаем доступ без аутентификации к статическим ресурсам и странице логина
                         .requestMatchers(
                                 "/", 
                                 "/login", 
@@ -70,7 +70,8 @@ public class SecurityConfig {
                                 "/js/**", 
                                 "/images/**",
                                 "/webjars/**",
-                                "/h2-console/**"
+                                "/h2-console/**",
+                                "/error"
                         ).permitAll()
                         
                         // API требует аутентификации
@@ -83,8 +84,8 @@ public class SecurityConfig {
                 )
 
                 .formLogin(form -> form
-                        .loginPage("/")  // Главная страница = страница логина
-                        .loginProcessingUrl("/perform_login")  // Изменяем URL для обработки логина
+                        .loginPage("/")  // Главная страница = страница логина (home.html)
+                        .loginProcessingUrl("/login")  // Spring Security обрабатывает POST /login
                         .defaultSuccessUrl("/applications", true)  // После успешного логина -> /applications
                         .failureUrl("/?error=true")
                         .permitAll()
@@ -103,7 +104,7 @@ public class SecurityConfig {
                 )
 
                 .logout(logout -> logout
-                        .logoutUrl("/perform_logout")
+                        .logoutUrl("/logout")
                         .logoutSuccessUrl("/?logout=true")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID", "remember-me")
