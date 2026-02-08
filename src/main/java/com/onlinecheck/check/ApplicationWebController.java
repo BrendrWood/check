@@ -120,4 +120,10 @@ public class ApplicationWebController {
         model.addAttribute("application", new Application());
         return "applications";
     }
+
+    @GetMapping("/test")
+public String testPage(Model model, Principal principal) {
+    System.out.println("DEBUG: Accessing test page");
+    return "test";
+}
 }
