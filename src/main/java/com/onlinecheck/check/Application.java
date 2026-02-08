@@ -53,7 +53,7 @@ public class Application {
     private boolean docs;               // ПУД и договор есть? (да/нет)
     private boolean roadMap;            // Схема подъездных путей есть? (да/нет)
     private boolean publicName;         // Публичное наименование соответствует? (да/нет)
-    private boolean rent;               // Аренда (МБ_АР_БА)? (да/нет) - ЗАМЕНА checkList
+    private Boolean rent;               // Аренда (МБ_АР_БА)? (да/нет) - ЗАМЕНА checkList
 
     private String installationDate;    // Дата монтажа (например, "15.12.2024")
     private String inspector;           // Кто проверял заявку
