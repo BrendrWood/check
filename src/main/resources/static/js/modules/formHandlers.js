@@ -206,6 +206,7 @@ export function fillFormWithApplication(app) {
     if (internetField) internetField.value = app.internetLevel || '';
 
     document.getElementById('internetReason').value = app.internetReason || '';
+    document.getElementById('equipmentReason').value = app.equipmentReason || ''; // НОВОЕ ПОЛЕ
 
     const installationField = document.querySelector('[name="installationDate"]');
     if (installationField) installationField.value = app.installationDate || '';
@@ -218,7 +219,7 @@ export function fillFormWithApplication(app) {
     const checkboxes = [
         'mpkInstalled', 'highCeiling', 'sensorConnectLevel', 'animals',
         'nightMode', 'sensorsOk', 'label', 'avr', 'systemPhoto',
-        'floorPlan', 'secondForm', 'docs', 'roadMap', 'publicName', 'checkList'
+        'floorPlan', 'secondForm', 'docs', 'roadMap', 'publicName', 'rental' // ИЗМЕНЕНО с checkList на rental
     ];
 
     checkboxes.forEach(name => {
@@ -265,37 +266,65 @@ export function fillFormWithApplication(app) {
 
 /**
  * Настраивает автодополнение для поля "Причина проблем с интернетом"
+ * и для нового поля "Причина, по которой не использовалось оборудование Б-ТМ"
  * Использует историю ввода и предопределенные варианты
  */
 export function setupAutocomplete() {
-    const input = document.getElementById('internetReason');
-    const autocompleteContainer = document.getElementById('internetReasonAutocomplete');
+    // Настройка автодополнения для причины проблем с интернетом
+    setupAutocompleteForField(
+        'internetReason',
+        'internetReasonAutocomplete',
+        [
+            "Нет на объекте",
+            "Слабый сигнал Wi-Fi",
+            "Частота передатчика роутера несовместима с частотой приемника КП",
+            "Клиент забыл оптатить",
+            "Клиент не помнит пароль",
+            "Клиент недавно переехал на объект",
+            "Проблема с контрольной панелью",
+            "Невозможно",
+            "Нет питания",
+            "Проблемы с модемом",
+            "Подключен",
+            "Проводной",
+            "Нет информации"
+        ]
+    );
+
+    // Настройка автодополнения для причины неиспользования оборудования Б-ТМ
+    setupAutocompleteForField(
+        'equipmentReason',
+        'equipmentReasonAutocomplete',
+        [
+            "Клиент отказался",
+            "Нет возможности установки",
+            "Технические ограничения",
+            "Не требуется",
+            "Другое оборудование предпочтительнее",
+            "Нет в наличии"
+        ]
+    );
+}
+
+/**
+ * Вспомогательная функция для настройки автодополнения для конкретного поля
+ * @param {string} inputId - ID поля ввода
+ * @param {string} containerId - ID контейнера для автодополнения
+ * @param {Array} defaultReasons - Массив предопределенных вариантов
+ */
+function setupAutocompleteForField(inputId, containerId, defaultReasons) {
+    const input = document.getElementById(inputId);
+    const autocompleteContainer = document.getElementById(containerId);
 
     if (!input || !autocompleteContainer) return;
 
     let usedReasons = new Set();
-    const reasonElements = document.querySelectorAll('[name="internetReason"]');
+    const reasonElements = document.querySelectorAll(`[name="${inputId}"]`);
     reasonElements.forEach(el => {
         if (el.value && el.value.trim()) {
             usedReasons.add(el.value.trim());
         }
     });
-
-    const defaultReasons = [
-        "Нет на объекте",
-        "Слабый сигнал Wi-Fi",
-        "Частота передатчика роутера несовместима с частотой приемника КП",
-        "Клиент забыл оптатить",
-        "Клиент не помнит пароль",
-        "Клиент недавно переехал на объект",
-        "Проблема с контрольной панелью",
-        "Невозможно",
-        "Нет питания",
-        "Проблемы с модемом",
-        "Подключен",
-        "Проводной",
-        "Нет информации"
-    ];
 
     defaultReasons.forEach(reason => usedReasons.add(reason));
 
