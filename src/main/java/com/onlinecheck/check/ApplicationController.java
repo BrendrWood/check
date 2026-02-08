@@ -154,7 +154,7 @@ public class ApplicationController {
                     if (updatedApplication.getInternetReason() != null) {
                         existing.setInternetReason(updatedApplication.getInternetReason());
                     }
-                    if (updatedApplication.getEquipmentReason() != null) { // НОВОЕ ПОЛЕ
+                    if (updatedApplication.getEquipmentReason() != null) {
                         existing.setEquipmentReason(updatedApplication.getEquipmentReason());
                     }
 
@@ -173,7 +173,7 @@ public class ApplicationController {
                     existing.setDocs(updatedApplication.isDocs());
                     existing.setRoadMap(updatedApplication.isRoadMap());
                     existing.setPublicName(updatedApplication.isPublicName());
-                    existing.setRental(updatedApplication.isRental()); // ИЗМЕНЕНО с setCheckList на setRental
+                    existing.setRental(updatedApplication.isRental()); // ИЗМЕНЕНО: setCheckList() -> setRental()
 
                     // Остальные поля
                     if (updatedApplication.getInstallationDate() != null) {
