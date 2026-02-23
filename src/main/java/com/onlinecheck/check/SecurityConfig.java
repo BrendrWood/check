@@ -22,31 +22,31 @@ public class SecurityConfig {
     public UserDetailsService userDetailsService() {
         UserDetails kholmikangas = User.builder()
                 .username("kholmikangas")
-                .password(passwordEncoder().encode("onlinecheck1"))
+                .password(passwordEncoder().encode("kMsfGe"))
                 .roles("ENGINEER")
                 .build();
 
         UserDetails bystryukov = User.builder()
                 .username("bystryukov")
-                .password(passwordEncoder().encode("onlinecheck2"))
+                .password(passwordEncoder().encode("ZSWRUN"))
                 .roles("ENGINEER")
                 .build();
 
         UserDetails tebin = User.builder()
                 .username("tebin")
-                .password(passwordEncoder().encode("onlinecheck3"))
+                .password(passwordEncoder().encode("UqdnEL"))
                 .roles("ENGINEER")
                 .build();
 
         UserDetails guest = User.builder()
                 .username("guest")
-                .password(passwordEncoder().encode("onlinecheck4"))
+                .password(passwordEncoder().encode("pUGmjU"))
                 .roles("ENGINEER")
                 .build();
 
         UserDetails balakin = User.builder()
                 .username("balakin")
-                .password(passwordEncoder().encode("boss321"))
+                .password(passwordEncoder().encode("XznwwG"))
                 .roles("BOSS")
                 .build();
 
