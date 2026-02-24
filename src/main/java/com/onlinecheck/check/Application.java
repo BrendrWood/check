@@ -57,7 +57,7 @@ public class Application {
 
     private String installationDate;    // Дата монтажа (например, "15.12.2024")
     private String inspector;           // Кто проверял заявку
-    private String rentReason;          // Причина, по которой не было использовано оборудование Б-ТМ
+    private String rentReason = "не требуется";          // Причина, по которой не было использовано оборудование Б-ТМ
 
     @Column(length = 2000)
     private String comments; // Комментарии/замечания по заявке
