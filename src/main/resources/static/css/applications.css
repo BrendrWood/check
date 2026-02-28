@@ -1,9 +1,141 @@
 /* applications.css - Основные стили для страницы заявок */
 
+/* CSS переменные для светлой темы (по умолчанию) */
+:root {
+    --bg-primary: #f8f9fa;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #e9ecef;
+    --text-primary: #212529;
+    --text-secondary: #495057;
+    --text-muted: #6c757d;
+    --border-color: #dee2e6;
+    --card-bg: #ffffff;
+    --card-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    --input-bg: #ffffff;
+    --input-border: #ced4da;
+    --hover-bg: #f8f9fa;
+    --hover-border: #adb5bd;
+    --header-gradient-start: #f8f9fa;
+    --header-gradient-end: #e9ecef;
+    --link-color: #0d6efd;
+    --success-bg: #d1e7dd;
+    --success-border: #badbcc;
+    --success-text: #0f5132;
+    --danger-bg: #f8d7da;
+    --danger-border: #f5c2c7;
+    --danger-text: #842029;
+    --warning-bg: #fff3cd;
+    --warning-border: #ffecb5;
+    --warning-text: #664d03;
+    --info-bg: #cff4fc;
+    --info-border: #b6effb;
+    --info-text: #055160;
+    --date-group-bg: #f8f9fa;
+    --date-group-border: #6c757d;
+    --table-header-bg: #f8f9fa;
+    --table-row-hover: #f8f9fa;
+    --table-border: #dee2e6;
+    --app-ok-border: #28a745;
+    --app-nok-border: #dc3545;
+    --highlight-bg: #fff3cd;
+    --highlight-border: #ffc107;
+    --scrollbar-track: #f1f1f1;
+    --scrollbar-thumb: #888;
+    --scrollbar-thumb-hover: #555;
+    --modal-header-bg: #f8f9fa;
+    --modal-header-text: #495057;
+    --modal-footer-bg: #f8f9fa;
+    --chip-bg: #e9ecef;
+    --chip-border: #ced4da;
+    --chip-text: #495057;
+    --chip-active-bg: #0d6efd;
+    --chip-active-text: #ffffff;
+    --chip-hover-bg: #dee2e6;
+    --alert-success-bg: #d1e7dd;
+    --alert-success-border: #badbcc;
+    --alert-success-text: #0f5132;
+    --alert-danger-bg: #f8d7da;
+    --alert-danger-border: #f5c2c7;
+    --alert-danger-text: #842029;
+    --alert-warning-bg: #fff3cd;
+    --alert-warning-border: #ffecb5;
+    --alert-warning-text: #664d03;
+    --alert-info-bg: #cff4fc;
+    --alert-info-border: #b6effb;
+    --alert-info-text: #055160;
+}
+
+/* Темная тема */
+[data-theme="dark"] {
+    --bg-primary: #1a1e24;
+    --bg-secondary: #2d333b;
+    --bg-tertiary: #373e47;
+    --text-primary: #e9ecef;
+    --text-secondary: #ced4da;
+    --text-muted: #adb5bd;
+    --border-color: #4a515b;
+    --card-bg: #2d333b;
+    --card-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    --input-bg: #373e47;
+    --input-border: #4a515b;
+    --hover-bg: #3f4752;
+    --hover-border: #6c757d;
+    --header-gradient-start: #2d333b;
+    --header-gradient-end: #373e47;
+    --link-color: #6ea8fe;
+    --success-bg: #1e3a2b;
+    --success-border: #2b5f3b;
+    --success-text: #9ec9a0;
+    --danger-bg: #3f2a2e;
+    --danger-border: #803b43;
+    --danger-text: #f1aeb5;
+    --warning-bg: #3f3524;
+    --warning-border: #856404;
+    --warning-text: #ffd966;
+    --info-bg: #1e3d47;
+    --info-border: #3f6b7a;
+    --info-text: #9ee2f0;
+    --date-group-bg: #2d333b;
+    --date-group-border: #6c757d;
+    --table-header-bg: #2d333b;
+    --table-row-hover: #3f4752;
+    --table-border: #4a515b;
+    --app-ok-border: #2b5f3b;
+    --app-nok-border: #803b43;
+    --highlight-bg: #3f3524;
+    --highlight-border: #856404;
+    --scrollbar-track: #2d333b;
+    --scrollbar-thumb: #4a515b;
+    --scrollbar-thumb-hover: #6c757d;
+    --modal-header-bg: #2d333b;
+    --modal-header-text: #e9ecef;
+    --modal-footer-bg: #2d333b;
+    --chip-bg: #373e47;
+    --chip-border: #4a515b;
+    --chip-text: #ced4da;
+    --chip-active-bg: #0d6efd;
+    --chip-active-text: #ffffff;
+    --chip-hover-bg: #3f4752;
+    --alert-success-bg: #1e3a2b;
+    --alert-success-border: #2b5f3b;
+    --alert-success-text: #9ec9a0;
+    --alert-danger-bg: #3f2a2e;
+    --alert-danger-border: #803b43;
+    --alert-danger-text: #f1aeb5;
+    --alert-warning-bg: #3f3524;
+    --alert-warning-border: #856404;
+    --alert-warning-text: #ffd966;
+    --alert-info-bg: #1e3d47;
+    --alert-info-border: #3f6b7a;
+    --alert-info-text: #9ee2f0;
+}
+
 /* Общие стили */
 body {
-    background-color: #f8f9fa;
+    background-color: var(--bg-primary);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .container {
@@ -12,20 +144,20 @@ body {
 
 /* Секции формы и сайдбара */
 .form-section {
-    background: white;
+    background: var(--card-bg);
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: var(--card-shadow);
     margin-bottom: 20px;
     height: calc(100vh - 120px);
     overflow-y: auto;
 }
 
 .sidebar {
-    background: white;
+    background: var(--card-bg);
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: var(--card-shadow);
     height: calc(100vh - 120px);
     display: flex;
     flex-direction: column;
@@ -36,29 +168,31 @@ body {
     padding: 6px 10px;
     margin-bottom: 4px;
     border-radius: 4px;
-    border: 1px solid #dee2e6;
+    border: 1px solid var(--border-color);
     cursor: pointer;
     transition: all 0.2s;
     min-height: 40px;
+    background: var(--card-bg);
+    color: var(--text-primary);
 }
 
 .application-item:hover {
-    background-color: #f8f9fa;
-    border-color: #adb5bd;
+    background-color: var(--hover-bg);
+    border-color: var(--hover-border);
     transform: translateY(-1px);
 }
 
 .application-ok {
-    border-left: 4px solid #28a745;
+    border-left: 4px solid var(--app-ok-border);
 }
 
 .application-nok {
-    border-left: 4px solid #dc3545;
+    border-left: 4px solid var(--app-nok-border);
 }
 
 .application-item.highlighted {
-    background-color: #e7f1ff !important;
-    border: 2px solid #0d6efd !important;
+    background-color: var(--highlight-bg) !important;
+    border: 2px solid var(--highlight-border) !important;
     box-shadow: 0 0 5px rgba(13, 110, 253, 0.3);
 }
 
@@ -83,7 +217,7 @@ body {
 }
 
 .form-check:hover {
-    background-color: #f8f9fa;
+    background-color: var(--hover-bg);
 }
 
 .form-check-label {
@@ -94,6 +228,7 @@ body {
     margin-bottom: 0;
     line-height: 1.3;
     font-size: 0.9em;
+    color: var(--text-primary);
 }
 
 .form-check-input {
@@ -103,6 +238,13 @@ body {
     transform: translateY(-50%);
     margin-top: 0;
     margin-left: 0;
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-border);
+}
+
+.form-check-input:checked {
+    background-color: var(--link-color);
+    border-color: var(--link-color);
 }
 
 .clickable {
@@ -123,14 +265,14 @@ body {
 
 .autocomplete-items {
     position: absolute;
-    border: 1px solid #d4d4d4;
+    border: 1px solid var(--border-color);
     border-bottom: none;
     border-top: none;
     z-index: 9999;
     top: 100%;
     left: 0;
     right: 0;
-    background-color: white;
+    background-color: var(--card-bg);
     max-height: 200px;
     overflow-y: auto;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
@@ -140,14 +282,15 @@ body {
 .autocomplete-items div {
     padding: 8px;
     cursor: pointer;
-    background-color: #fff;
-    border-bottom: 1px solid #d4d4d4;
+    background-color: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
     font-size: 0.9em;
     transition: background-color 0.2s;
+    color: var(--text-primary);
 }
 
 .autocomplete-items div:hover {
-    background-color: #e9e9e9;
+    background-color: var(--hover-bg);
 }
 
 .autocomplete-items div:last-child {
@@ -155,7 +298,7 @@ body {
 }
 
 .autocomplete-active {
-    background-color: #007bff !important;
+    background-color: var(--link-color) !important;
     color: #ffffff;
 }
 
@@ -180,31 +323,35 @@ input[type="radio"].resolution-radio {
 }
 
 input[type="radio"]#resolutionOk {
-    accent-color: #28a745;
+    accent-color: var(--app-ok-border);
 }
 
 input[type="radio"]#resolutionNok {
-    accent-color: #dc3545;
+    accent-color: var(--app-nok-border);
 }
 
 .resolution-label {
     cursor: pointer;
     font-size: 0.9em;
     margin-left: 3px;
+    color: var(--text-primary);
 }
 
 /* Стили для элементов заявок */
 .application-item .small {
     font-size: 0.8em;
     margin-top: 1px;
+    color: var(--text-muted);
 }
 
 .application-item strong {
     font-size: 0.95em;
+    color: var(--text-primary);
 }
 
 .application-item .text-muted {
     font-size: 0.85em;
+    color: var(--text-muted) !important;
 }
 
 .application-item .badge {
@@ -219,14 +366,29 @@ input[type="radio"]#resolutionNok {
 
 /* Формы */
 .form-control {
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--text-primary);
     padding: 6px 8px;
     font-size: 0.9em;
     min-height: 35px;
 }
 
+.form-control:focus {
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    border-color: var(--link-color);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.form-control::placeholder {
+    color: var(--text-muted);
+}
+
 .form-label {
     font-size: 0.9em;
     margin-bottom: 3px;
+    color: var(--text-secondary);
 }
 
 .btn {
@@ -260,13 +422,13 @@ input[type="radio"]#resolutionNok {
 .search-list-container {
     margin-top: 10px;
     padding-top: 10px;
-    border-top: 1px solid #dee2e6;
+    border-top: 1px solid var(--border-color);
 }
 
 .search-list-info {
     margin-top: 5px;
     font-size: 0.85em;
-    color: #6c757d;
+    color: var(--text-muted);
 }
 
 .applications-list-container {
@@ -291,10 +453,10 @@ input[type="radio"]#resolutionNok {
     padding: 6px 10px;
     margin: 3px 0;
     font-size: 0.85em;
-    background: white;
-    border: 1px solid #dee2e6;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
     border-radius: 4px;
-    color: #495057;
+    color: var(--text-primary);
     transition: all 0.2s;
     cursor: pointer;
     white-space: normal;
@@ -303,30 +465,31 @@ input[type="radio"]#resolutionNok {
 }
 
 .issue-button-tree:hover {
-    background: #e9ecef;
-    border-color: #adb5bd;
+    background: var(--hover-bg);
+    border-color: var(--hover-border);
     transform: translateY(-1px);
 }
 
 .issue-button-tree.added {
-    background: #d1e7dd;
-    border-color: #badbcc;
-    color: #0f5132;
+    background: var(--success-bg);
+    border-color: var(--success-border);
+    color: var(--success-text);
     font-weight: 500;
 }
 
 .issue-button-tree.added:hover {
-    background: #c3e6cb;
-    border-color: #a3cfbb;
+    background: var(--success-bg);
+    border-color: var(--success-border);
+    opacity: 0.9;
 }
 
 .issues-tree .category-header {
     font-weight: 600;
-    color: #495057;
+    color: var(--text-primary);
     margin-top: 15px;
     margin-bottom: 8px;
     padding-bottom: 4px;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px solid var(--border-color);
     font-size: 0.95em;
     cursor: pointer;
     display: flex;
@@ -335,7 +498,7 @@ input[type="radio"]#resolutionNok {
 
 .issues-tree .subcategory-header {
     font-weight: 500;
-    color: #6c757d;
+    color: var(--text-secondary);
     margin: 10px 0 6px 15px;
     font-size: 0.9em;
     cursor: pointer;
@@ -373,17 +536,17 @@ input[type="radio"]#resolutionNok {
     align-items: center;
     margin-bottom: 10px;
     padding-bottom: 10px;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .issues-selected-info {
     font-size: 0.9em;
-    color: #6c757d;
-    background: #f8f9fa;
+    color: var(--info-text);
+    background: var(--info-bg);
     padding: 8px 12px;
     border-radius: 4px;
     margin-bottom: 15px;
-    border-left: 4px solid #0d6efd;
+    border-left: 4px solid var(--link-color);
 }
 
 /* Стили для кнопки "Типовые нарушения" */
@@ -404,36 +567,37 @@ input[type="radio"]#resolutionNok {
 }
 
 .modal-title {
-    color: #495057;
+    color: var(--modal-header-text);
 }
 
-.modal-content-issues {
+.modal-content {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    width: 108%;
 }
 
-.modal-header-issues {
-    background: linear-gradient(135deg, #8d9093 0%, #f8f9fa 100%);
-    color: white;
-    border-bottom: none;
+.modal-header {
+    background: linear-gradient(135deg, var(--header-gradient-start) 0%, var(--header-gradient-end) 100%);
+    color: var(--modal-header-text);
+    border-bottom: 1px solid var(--border-color);
     padding: 1rem 1.5rem;
 }
 
-.modal-body-issues {
+.modal-body {
     padding: 1.5rem;
     max-height: 70vh;
     overflow-y: auto;
 }
 
-.modal-footer-issues {
-    border-top: 1px solid #dee2e6;
+.modal-footer {
+    border-top: 1px solid var(--border-color);
     padding: 1rem 1.5rem;
-    background: #f8f9fa;
+    background: var(--modal-footer-bg);
 }
 
-.btn-close-white {
+[data-theme="dark"] .modal-header .btn-close-white {
     filter: invert(1) grayscale(100%) brightness(200%);
 }
 
@@ -480,29 +644,30 @@ input[type="radio"]#resolutionNok {
 
 /* Стили для таблицы всех заявок */
 .date-group {
-    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-    border-left: 4px solid #1976d2;
+    background: var(--date-group-bg);
+    border-left: 4px solid var(--date-group-border);
     border-radius: 4px;
     padding: 8px 12px;
     margin: 15px 0 10px 0;
     font-weight: 600;
-    color: #0d47a1;
+    color: var(--text-primary);
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .date-group:hover {
-    background: linear-gradient(135deg, #bbdefb 0%, #90caf9 100%);
+    background-color: var(--hover-bg);
 }
 
 .date-group.expanded {
-    background: linear-gradient(135deg, #90caf9 0%, #64b5f6 100%);
+    background: var(--hover-bg);
 }
 
 .date-group .badge {
-    background-color: #0d47a1;
+    background-color: var(--text-muted);
     font-size: 0.8em;
     margin-left: 8px;
+    color: white;
 }
 
 .all-applications-table {
@@ -513,19 +678,20 @@ input[type="radio"]#resolutionNok {
 }
 
 .all-applications-table th {
-    background-color: #f8f9fa;
+    background-color: var(--table-header-bg);
     position: sticky;
     top: 0;
     z-index: 10;
     font-weight: 600;
-    color: #495057;
-    border-bottom: 2px solid #dee2e6;
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--table-border);
     padding: 8px 6px;
 }
 
 .all-applications-table td {
     padding: 6px;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px solid var(--table-border);
+    color: var(--text-primary);
 }
 
 .all-applications-table tr {
@@ -533,7 +699,7 @@ input[type="radio"]#resolutionNok {
 }
 
 .all-applications-table tr:hover {
-    background-color: #f8f9fa;
+    background-color: var(--table-row-hover);
 }
 
 .all-applications-table .app-row {
@@ -542,16 +708,16 @@ input[type="radio"]#resolutionNok {
 }
 
 .all-applications-table .app-row.ok {
-    border-left-color: #28a745;
+    border-left-color: var(--app-ok-border);
 }
 
 .all-applications-table .app-row.nok {
-    border-left-color: #dc3545;
+    border-left-color: var(--app-nok-border);
 }
 
 .all-applications-table .app-row.highlighted {
-    background-color: #fff3cd !important;
-    border-left-color: #ffc107;
+    background-color: var(--highlight-bg) !important;
+    border-left-color: var(--highlight-border);
 }
 
 .compact-cell {
@@ -578,8 +744,8 @@ input[type="radio"]#resolutionNok {
 }
 
 .date-chip {
-    background-color: #e9ecef;
-    border: 1px solid #ced4da;
+    background-color: var(--chip-bg);
+    border: 1px solid var(--chip-border);
     border-radius: 20px;
     padding: 4px 12px;
     font-size: 0.85em;
@@ -588,19 +754,20 @@ input[type="radio"]#resolutionNok {
     display: inline-flex;
     align-items: center;
     gap: 5px;
+    color: var(--chip-text);
 }
 
 .date-chip:hover {
-    background-color: #007bff;
-    color: white;
-    border-color: #007bff;
+    background-color: var(--chip-hover-bg);
+    border-color: var(--hover-border);
     transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .date-chip.active {
-    background-color: #007bff;
-    color: white;
-    border-color: #007bff;
+    background-color: var(--chip-active-bg);
+    color: var(--chip-active-text);
+    border-color: var(--chip-active-bg);
     font-weight: 600;
 }
 
@@ -609,20 +776,21 @@ input[type="radio"]#resolutionNok {
     transition: all 0.3s ease;
 }
 
-/* Стили для переключателя автообновления */
+/* Стили для переключателя автообновления и темы */
 .form-switch .form-check-input:checked {
-    background-color: #0d6efd;
-    border-color: #0d6efd;
+    background-color: var(--link-color);
+    border-color: var(--link-color);
 }
 
 .form-switch .form-check-input:focus {
-    border-color: #86b7fe;
+    border-color: var(--link-color);
     box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 
 .form-switch .form-check-label {
     cursor: pointer;
     user-select: none;
+    color: var(--text-primary);
 }
 
 /* Стили для статистики таблицы */
@@ -630,6 +798,10 @@ input[type="radio"]#resolutionNok {
     font-size: 0.9em;
     padding: 10px 15px;
     margin-bottom: 15px;
+    background-color: var(--info-bg);
+    color: var(--info-text);
+    border: 1px solid var(--info-border);
+    border-radius: 5px;
 }
 
 #allTableStats strong {
@@ -652,40 +824,97 @@ input[type="radio"]#resolutionNok {
     font-size: 0.8em;
 }
 
-.btn-outline-primary.btn-sm {
-    border-width: 1px;
+.btn-outline-primary {
+    color: var(--link-color);
+    border-color: var(--link-color);
 }
 
-.btn-outline-danger.btn-sm {
-    border-width: 1px;
+.btn-outline-primary:hover {
+    background-color: var(--link-color);
+    color: #ffffff;
+}
+
+.btn-outline-success {
+    color: var(--success-text);
+    border-color: var(--success-border);
+}
+
+.btn-outline-success:hover {
+    background-color: var(--success-border);
+    color: #ffffff;
+}
+
+.btn-outline-danger {
+    color: var(--danger-text);
+    border-color: var(--danger-border);
+}
+
+.btn-outline-danger:hover {
+    background-color: var(--danger-border);
+    color: #ffffff;
+}
+
+.btn-outline-secondary {
+    color: var(--text-secondary);
+    border-color: var(--border-color);
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--hover-bg);
+    color: var(--text-primary);
+    border-color: var(--hover-border);
+}
+
+.btn-outline-info {
+    color: var(--info-text);
+    border-color: var(--info-border);
+}
+
+.btn-outline-info:hover {
+    background-color: var(--info-border);
+    color: var(--text-primary);
+}
+
+.btn-secondary {
+    background-color: var(--bg-tertiary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+    background-color: var(--hover-bg);
+    border-color: var(--hover-border);
+    color: var(--text-primary);
 }
 
 /* Стили для результатов поиска */
 .search-results-header {
-    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    background: linear-gradient(135deg, var(--header-gradient-start) 0%, var(--header-gradient-end) 100%);
     border-radius: 8px;
     padding: 15px;
     margin-bottom: 20px;
-    border-left: 4px solid #1976d2;
+    border-left: 4px solid var(--link-color);
 }
 
 .search-results-header .alert {
     margin: 0;
     border: none;
+    background-color: transparent;
+    color: var(--text-primary);
 }
 
 .search-result {
-    background-color: #fffde7 !important;
+    background-color: var(--highlight-bg) !important;
     transition: all 0.3s ease;
 }
 
 .search-result:hover {
-    background-color: #fff9c4 !important;
+    background-color: var(--warning-bg) !important;
 }
 
 .search-result.highlighted {
-    background-color: #fff176 !important;
-    border-left: 4px solid #f57c00 !important;
+    background-color: var(--warning-bg) !important;
+    border-left: 4px solid var(--highlight-border) !important;
 }
 
 /* Кнопки управления поиском */
@@ -720,18 +949,19 @@ input[type="radio"]#resolutionNok {
 .search-active-indicator {
     position: sticky;
     top: 0;
-    background: #fff3cd;
-    border-bottom: 2px solid #ffc107;
+    background: var(--warning-bg);
+    border-bottom: 2px solid var(--warning-border);
     padding: 8px 15px;
     z-index: 100;
     margin-bottom: 15px;
     border-radius: 4px;
+    color: var(--warning-text);
 }
 
 /* Стили для расширенного поиска */
 .advanced-search {
-    background: #f8f9fa;
-    border: 1px solid #dee2e6;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
     border-radius: 6px;
     padding: 15px;
     margin-bottom: 20px;
@@ -748,6 +978,7 @@ input[type="radio"]#resolutionNok {
 .spinner-border {
     width: 3rem;
     height: 3rem;
+    color: var(--link-color);
 }
 
 .spinner-border-sm {
@@ -762,17 +993,17 @@ input[type="radio"]#resolutionNok {
 }
 
 ::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: var(--scrollbar-track);
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #888;
+    background: var(--scrollbar-thumb);
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    background: var(--scrollbar-thumb-hover);
 }
 
 /* Анимации */
@@ -822,10 +1053,6 @@ input[type="radio"]#resolutionNok {
         max-width: 100%;
     }
 
-    .modal-content-issues {
-        width: 100%;
-    }
-
     .search-controls {
         flex-direction: column;
     }
@@ -870,6 +1097,37 @@ input[type="radio"]#resolutionNok {
 }
 
 /* Стили для уведомлений */
+.alert {
+    border: 1px solid transparent;
+    border-radius: 0.375rem;
+    padding: 0.5rem 1rem;
+    margin-bottom: 1rem;
+}
+
+.alert-success {
+    background-color: var(--alert-success-bg);
+    border-color: var(--alert-success-border);
+    color: var(--alert-success-text);
+}
+
+.alert-danger {
+    background-color: var(--alert-danger-bg);
+    border-color: var(--alert-danger-border);
+    color: var(--alert-danger-text);
+}
+
+.alert-warning {
+    background-color: var(--alert-warning-bg);
+    border-color: var(--alert-warning-border);
+    color: var(--alert-warning-text);
+}
+
+.alert-info {
+    background-color: var(--alert-info-bg);
+    border-color: var(--alert-info-border);
+    color: var(--alert-info-text);
+}
+
 .alert-dismissible {
     padding-right: 3rem;
 }
@@ -880,8 +1138,9 @@ input[type="radio"]#resolutionNok {
 
 /* Стили для мастер-чекбокса */
 .card {
-    border: 1px solid rgba(0,0,0,.125);
+    border: 1px solid var(--border-color);
     border-radius: 0.375rem;
+    background-color: var(--card-bg);
 }
 
 .card-body {
@@ -898,7 +1157,7 @@ input[type="radio"]#resolutionNok {
 }
 
 .card-body .d-flex .form-check:not(:last-child) {
-    border-right: 1px solid #dee2e6;
+    border-right: 1px solid var(--border-color);
 }
 
 .card-body .d-flex .form-check:first-child {
@@ -915,6 +1174,7 @@ input[type="radio"]#resolutionNok {
 
 .card-body .d-flex .form-check .form-check-label {
     white-space: nowrap;
+    color: var(--text-primary);
 }
 
 /* Стили для полей формы в модальном окне */
@@ -926,6 +1186,7 @@ input[type="radio"]#resolutionNok {
 .modal-body .form-label {
     font-size: 0.85em;
     font-weight: 500;
+    color: var(--text-secondary);
 }
 
 /* Стили для кнопок в таблице */
@@ -942,7 +1203,7 @@ input[type="radio"]#resolutionNok {
 
 /* Стили для выделения активного элемента */
 :focus {
-    outline: 2px solid #0d6efd;
+    outline: 2px solid var(--link-color);
     outline-offset: 2px;
 }
 
@@ -954,11 +1215,11 @@ input[type="radio"]#resolutionNok {
 
 /* Стили для валидации форм */
 .is-invalid {
-    border-color: #dc3545 !important;
+    border-color: var(--danger-text) !important;
 }
 
 .is-valid {
-    border-color: #198754 !important;
+    border-color: var(--success-text) !important;
 }
 
 .invalid-feedback {
@@ -966,7 +1227,7 @@ input[type="radio"]#resolutionNok {
     width: 100%;
     margin-top: 0.25rem;
     font-size: 0.875em;
-    color: #dc3545;
+    color: var(--danger-text);
 }
 
 .is-invalid ~ .invalid-feedback {
@@ -982,7 +1243,7 @@ input[type="radio"]#resolutionNok {
 hr {
     margin: 1.5rem 0;
     border: 0;
-    border-top: 1px solid rgba(0,0,0,.1);
+    border-top: 1px solid var(--border-color);
 }
 
 /* Стили для текста с переносом */
@@ -1008,9 +1269,9 @@ hr {
 /* Заголовок модального окна */
 .modal-xl .modal-header {
     flex-shrink: 0;
-    background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
-    color: white;
-    border-bottom: none;
+    background: linear-gradient(135deg, var(--header-gradient-start) 0%, var(--header-gradient-end) 100%);
+    color: var(--modal-header-text);
+    border-bottom: 1px solid var(--border-color);
     padding: 1rem 1.5rem;
 }
 
@@ -1025,8 +1286,8 @@ hr {
 /* Футер модального окна */
 .modal-xl .modal-footer {
     flex-shrink: 0;
-    background-color: #f8f9fa;
-    border-top: 1px solid #dee2e6;
+    background-color: var(--modal-footer-bg);
+    border-top: 1px solid var(--border-color);
     padding: 1rem 1.5rem;
 }
 
@@ -1035,9 +1296,9 @@ hr {
     min-height: 400px;
     max-height: 50vh;
     overflow-y: auto;
-    border: 1px solid #dee2e6;
+    border: 1px solid var(--border-color);
     border-radius: 5px;
-    background: white;
+    background: var(--card-bg);
 }
 
 /* Панель управления поиском */
@@ -1061,16 +1322,17 @@ hr {
 
 /* Статистика */
 #allTableStats {
-    background-color: #e7f1ff;
-    border: 1px solid #cfe2ff;
+    background-color: var(--info-bg);
+    border: 1px solid var(--info-border);
     border-radius: 5px;
     padding: 10px 15px;
     margin-bottom: 15px;
+    color: var(--info-text);
 }
 
 /* Стили для даты в статистике */
 #allTableStats strong {
-    color: #0d6efd;
+    color: var(--info-text);
 }
 
 /* Кнопки в статистике */
@@ -1087,7 +1349,7 @@ hr {
 .all-applications-table th {
     position: sticky;
     top: 0;
-    background-color: #f8f9fa;
+    background-color: var(--table-header-bg);
     z-index: 10;
 }
 
@@ -1172,13 +1434,17 @@ hr {
 .modal-header .btn-close {
     padding: 0.5rem;
     margin: -0.5rem -0.5rem -0.5rem auto;
+    opacity: 0.7;
+}
+
+[data-theme="dark"] .modal-header .btn-close {
     filter: invert(1) grayscale(100%) brightness(200%);
 }
 
 /* Стили для группировки по датам в модальном окне */
 .date-group {
-    background-color: #f8f9fa;
-    border-left: 4px solid #0d6efd;
+    background-color: var(--date-group-bg);
+    border-left: 4px solid var(--date-group-border);
     padding: 8px 12px;
     margin: 10px 0;
     cursor: pointer;
@@ -1187,7 +1453,7 @@ hr {
 }
 
 .date-group:hover {
-    background-color: #e9ecef;
+    background-color: var(--hover-bg);
 }
 
 .date-content {
@@ -1228,34 +1494,35 @@ hr {
 /* Фикс для дат навигации */
 .date-navigation {
     padding-bottom: 10px;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px solid var(--border-color);
     margin-bottom: 15px;
 }
 
 /* Подсветка найденных элементов при поиске */
 .issue-button-tree.highlighted {
-    background-color: #fff3cd !important;
-    border-color: #ffc107 !important;
-    color: #856404 !important;
+    background-color: var(--highlight-bg) !important;
+    border-color: var(--highlight-border) !important;
+    color: var(--warning-text) !important;
     font-weight: 600;
     box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.25);
     animation: highlightPulse 2s infinite;
 }
 
 @keyframes highlightPulse {
-    0% { background-color: #fff3cd; }
-    50% { background-color: #ffeaa7; }
-    100% { background-color: #fff3cd; }
+    0% { background-color: var(--highlight-bg); }
+    50% { background-color: var(--warning-bg); }
+    100% { background-color: var(--highlight-bg); }
 }
 
 /* Сообщение о результатах поиска */
 .search-results-info {
     margin: 10px 0;
     padding: 10px;
-    background-color: #e7f1ff;
-    border-left: 4px solid #0d6efd;
+    background-color: var(--info-bg);
+    border-left: 4px solid var(--link-color);
     border-radius: 4px;
     font-size: 0.9em;
+    color: var(--info-text);
 }
 
 /* ============================================
@@ -1264,9 +1531,9 @@ hr {
 
 /* Модальное окно таблицы заявок - минималистичный стиль */
 #allApplicationsModal .modal-header {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    color: #495057;
-    border-bottom: 1px solid #dee2e6;
+    background: linear-gradient(135deg, var(--header-gradient-start) 0%, var(--header-gradient-end) 100%);
+    color: var(--modal-header-text);
+    border-bottom: 1px solid var(--border-color);
     padding: 1rem 1.5rem;
 }
 
@@ -1275,8 +1542,8 @@ hr {
 }
 
 #allApplicationsModal .modal-footer {
-    background-color: #f8f9fa;
-    border-top: 1px solid #dee2e6;
+    background-color: var(--modal-footer-bg);
+    border-top: 1px solid var(--border-color);
     padding: 1rem 1.5rem;
 }
 
@@ -1284,11 +1551,11 @@ hr {
 .search-results-header .alert,
 .date-group {
     background: none;
-    background-color: #f8f9fa;
+    background-color: var(--date-group-bg);
 }
 
 .date-group {
-    border-left: 3px solid #6c757d;
+    border-left: 3px solid var(--date-group-border);
     padding: 6px 10px;
     margin: 8px 0;
     min-height: 36px;
@@ -1302,13 +1569,15 @@ hr {
 }
 
 .date-group:hover {
-    background-color: #e9ecef;
+    background-color: var(--hover-bg);
 }
 
 .date-group .badge {
     font-size: 0.7em;
     padding: 1px 5px;
     margin-left: auto;
+    background-color: var(--text-muted);
+    color: white;
 }
 
 .date-group .collapse-icon {
@@ -1325,16 +1594,16 @@ hr {
     margin-bottom: 10px;
     max-height: 80px;
     overflow-y: auto;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .date-chip {
     padding: 2px 8px;
     font-size: 0.75em;
     border-radius: 12px;
-    background-color: #e9ecef;
-    border: 1px solid #ced4da;
-    color: #495057;
+    background-color: var(--chip-bg);
+    border: 1px solid var(--chip-border);
+    color: var(--chip-text);
     transition: all 0.15s ease;
     height: 24px;
     display: inline-flex;
@@ -1344,15 +1613,15 @@ hr {
 }
 
 .date-chip:hover {
-    background-color: #dee2e6;
+    background-color: var(--chip-hover-bg);
     transform: translateY(-1px);
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .date-chip.active {
-    background-color: #0d6efd;
-    color: white;
-    border-color: #0d6efd;
+    background-color: var(--chip-active-bg);
+    color: var(--chip-active-text);
+    border-color: var(--chip-active-bg);
     font-weight: 500;
 }
 
@@ -1364,14 +1633,16 @@ hr {
 .date-content th {
     padding: 6px 4px;
     font-size: 0.75em;
-    background-color: #f8f9fa;
-    border-bottom: 2px solid #dee2e6;
+    background-color: var(--table-header-bg);
+    border-bottom: 2px solid var(--table-border);
+    color: var(--text-primary);
 }
 
 .date-content td {
     padding: 4px;
     line-height: 1.2;
-    border-bottom: 1px solid #e9ecef;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
 }
 
 .date-content .app-row {
@@ -1380,7 +1651,7 @@ hr {
 }
 
 .date-content .app-row:hover {
-    background-color: #f8f9fa;
+    background-color: var(--table-row-hover);
 }
 
 .date-content .comments-cell {
@@ -1399,21 +1670,22 @@ hr {
 
 /* Статистика таблицы */
 #allTableStats {
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
+    background-color: var(--info-bg);
+    border: 1px solid var(--info-border);
     border-radius: 5px;
     padding: 10px 15px;
     margin-bottom: 15px;
     font-size: 0.9em;
+    color: var(--info-text);
 }
 
 /* Контейнер таблицы с фиксированной высотой */
 #allApplicationsTableContainer {
     max-height: 60vh;
     overflow-y: auto;
-    border: 1px solid #dee2e6;
+    border: 1px solid var(--border-color);
     border-radius: 5px;
-    background: white;
+    background: var(--card-bg);
 }
 
 /* Панель управления поиском */
@@ -1435,9 +1707,9 @@ hr {
    ============================================ */
 
 #issuesTreeModal .modal-header {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    color: #495057;
-    border-bottom: 1px solid #dee2e6;
+    background: linear-gradient(135deg, var(--header-gradient-start) 0%, var(--header-gradient-end) 100%);
+    color: var(--modal-header-text);
+    border-bottom: 1px solid var(--border-color);
 }
 
 /* Упрощаем кнопку закрытия */
@@ -1446,10 +1718,14 @@ hr {
     opacity: 0.7;
 }
 
+[data-theme="dark"] .btn-close-white {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
 /* Упрощаем контейнеры */
 .modal-content-issues {
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    border: 1px solid #dee2e6;
+    border: 1px solid var(--border-color);
 }
 
 /* ============================================
@@ -1553,87 +1829,6 @@ hr {
     scrollbar-width: none;
     -ms-overflow-style: none;
     padding: 0 40%;
-}
-
-.date-radio-scroll::-webkit-scrollbar {
-    display: none;
-}
-
-.date-radio-chip {
-    flex: 0 0 auto;
-    padding: 6px 12px;
-    margin: 0 8px;
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
-    border-radius: 20px;
-    font-size: 0.85em;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    white-space: nowrap;
-}
-
-/* ============================================
-   ОБЩИЕ УЛУЧШЕНИЯ ДИЗАЙНА
-   ============================================ */
-
-/* Более тонкие тени */
-.card {
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-/* Упрощенные алерты */
-.alert {
-    border: 1px solid #dee2e6;
-    box-shadow: none;
-}
-
-/* Улучшенные скроллбары */
-::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
-
-::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #adb5bd;
-    border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #6c757d;
-}
-
-/* Анимация открытия групп дат */
-.date-content {
-    animation: fadeIn 0.3s ease;
-}
-
-/* ============================================
-   РАДИО-ПРОКРУТКА ДАТ (обновленные стили)
-   ============================================ */
-
-.date-radio-scroll-container {
-    position: relative;
-    width: 100%;
-    height: 48px;
-    margin-bottom: 10px;
-    overflow: hidden;
-}
-
-.date-radio-scroll {
-    display: flex;
-    align-items: center;
-    height: 100%;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-behavior: smooth;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    padding: 0 35%; /* Уменьшили отступы для центрирования */
     cursor: grab;
     -webkit-overflow-scrolling: touch;
 }
@@ -1648,47 +1843,45 @@ hr {
 
 .date-radio-chip {
     flex: 0 0 auto;
-    padding: 4px 10px; /* Уменьшили padding */
-    margin: 0 6px; /* Уменьшили отступы между кнопками */
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6; /* Более тонкая рамка */
-    border-radius: 16px; /* Немного меньше радиус */
-    font-size: 0.75em; /* Уменьшили текст */
+    padding: 6px 12px;
+    margin: 0 8px;
+    background-color: var(--chip-bg);
+    border: 1px solid var(--chip-border);
+    border-radius: 20px;
+    font-size: 0.85em;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     white-space: nowrap;
-    font-weight: 500;
-    color: #495057;
+    color: var(--chip-text);
     user-select: none;
     -webkit-user-select: none;
-    min-height: 28px; /* Минимальная высота */
+    min-height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .date-radio-chip:hover {
-    background-color: #e9ecef;
-    border-color: #adb5bd;
+    background-color: var(--chip-hover-bg);
+    border-color: var(--hover-border);
     transform: translateY(-1px);
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .date-radio-chip.active {
-    background-color: #0d6efd;
-    color: white;
-    border-color: #0d6efd;
-    opacity: 1;
-    transform: scale(1.05) translateY(-1px); /* Уменьшили масштаб */
-    box-shadow: 0 3px 6px rgba(13, 110, 253, 0.25); /* Меньшая тень */
+    background-color: var(--chip-active-bg);
+    color: var(--chip-active-text);
+    border-color: var(--chip-active-bg);
+    transform: scale(1.05) translateY(-1px);
+    box-shadow: 0 3px 6px rgba(13, 110, 253, 0.25);
     font-weight: 600;
 }
 
 .date-radio-chip.near-center {
     opacity: 0.8;
     transform: scale(1.02);
-    background-color: #e7f1ff;
-    border-color: #b3d4fc;
+    background-color: var(--hover-bg);
+    border-color: var(--hover-border);
 }
 
 /* Индикатор центра (более заметный) */
@@ -1697,7 +1890,7 @@ hr {
     top: 0;
     bottom: 0;
     left: 50%;
-    width: 2px; /* Тоньше */
+    width: 2px;
     background: linear-gradient(to bottom, rgba(13, 110, 253, 0.5), transparent);
     transform: translateX(-50%);
     z-index: 1;
@@ -1707,12 +1900,12 @@ hr {
 .date-radio-center-marker::before {
     content: '';
     position: absolute;
-    top: 2px; /* Ближе к верху */
+    top: 2px;
     left: 50%;
     transform: translateX(-50%);
-    width: 8px; /* Меньше */
-    height: 8px; /* Меньше */
-    background-color: #0d6efd;
+    width: 8px;
+    height: 8px;
+    background-color: var(--link-color);
     border-radius: 50%;
 }
 
@@ -1750,5 +1943,13 @@ hr {
 }
 
 .btn-warning {
-background-color: #ffffff;
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #000;
+}
+
+[data-theme="dark"] .btn-warning {
+    background-color: #856404;
+    border-color: #856404;
+    color: #ffd966;
 }
