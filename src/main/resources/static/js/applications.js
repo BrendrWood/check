@@ -63,6 +63,7 @@ import {
     escapeRegExp
 } from './modules/utils.js';
 import { initRadioDateScroll, updateChipOpacity } from './modules/radioDateScroll.js';
+import { initTheme, setupThemeHandlers } from './modules/theme.js';
 
 // ============================================
 // ГЛОБАЛЬНЫЙ ЭКСПОРТ ФУНКЦИЙ
@@ -415,6 +416,10 @@ document.addEventListener('DOMContentLoaded', function() {
     setupDateFilter();
     setupIssuesTreeHandlers();
     setupApplicationsTableHandlers();
+
+    // НОВОЕ: Инициализация темы
+    initTheme();
+    setupThemeHandlers();
 
     // Настройка обработчиков для комбинированной фильтрации
     setupUniversalButtonHandlers();
