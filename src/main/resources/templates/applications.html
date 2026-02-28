@@ -253,7 +253,6 @@
         <div class="col-lg-4 col-md-5">
             <div class="sidebar">
 
-
                 <!-- Управление заявками -->
                 <div class="mb-3">
                     <h6 style="font-size: 0.95rem;">Управление заявками</h6>
@@ -261,9 +260,19 @@
                         <button type="button" class="btn btn-outline-info btn-sm" id="openAllApplicationsBtn">
                             <i class="bi bi-table"></i> Таблица всех заявок
                         </button>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="autoRefreshSwitch">
-                            <label class="form-check-label small" for="autoRefreshSwitch">Автообновление</label>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="autoRefreshSwitch">
+                                <label class="form-check-label small" for="autoRefreshSwitch">Автообновление</label>
+                            </div>
+                            
+                            <!-- НОВЫЙ ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ -->
+                            <div class="form-check form-switch ms-2">
+                                <input class="form-check-input" type="checkbox" id="themeSwitch">
+                                <label class="form-check-label small" for="themeSwitch">
+                                    <i class="bi bi-moon-stars"></i> Темная тема
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -384,15 +393,14 @@
 </div>
 
 <!-- Модальное окно для таблицы всех заявок -->
-<!-- Модальное окно для таблицы всех заявок -->
 <div class="modal fade" id="allApplicationsModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
+            <div class="modal-header">
                 <h5 class="modal-title">
                     <i class="bi bi-table me-2"></i>Все заявки (полная таблица)
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <!-- Улучшенная панель управления -->
@@ -419,7 +427,7 @@
                 </div>
 
                 <!-- Статистика с поддержкой фильтра даты -->
-                <div id="allTableStats" class="alert alert-info py-2 mb-3">
+                <div id="allTableStats" class="alert py-2 mb-3">
                     <i class="bi bi-info-circle"></i>
                     <span id="totalCount">0</span> заявок всего
                     <span id="dateFilterStats" style="display: none;">
