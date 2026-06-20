@@ -50,7 +50,13 @@ public class SecurityConfig {
                 .roles("BOSS")
                 .build();
 
-        return new InMemoryUserDetailsManager(kholmikangas, bystryukov, tebin, guest, balakin);
+        UserDetails okonechnikov = User.builder()
+                .username("okonechnikov")
+                .password(passwordEncoder().encode("p7guCO"))
+                .roles("ENGINEER")
+                .build();
+
+        return new InMemoryUserDetailsManager(kholmikangas, bystryukov, tebin, guest, balakin, okonechnikov);
     }
 
     @Bean
