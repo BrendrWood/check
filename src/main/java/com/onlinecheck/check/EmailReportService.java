@@ -28,6 +28,7 @@ public class EmailReportService {
     // Список получателей
     private final String[] recipients = {
             "balakin.as@Gulfstream.ru",
+            "tatarenkov.dn@Gulfstream.ru",
             "bystryukov.dv@vrz.gulfstream.ru",
             "tebin.nd@spb.gulfstream.ru",
             "kholmikangas.bs@spb.gulfstream.ru",
@@ -58,7 +59,7 @@ public class EmailReportService {
             helper.setFrom(senderEmail);
             helper.setTo(recipients);
             helper.setSubject("Ежедневный отчёт: Заявки Директ с нарушениями. Отчет за " + LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
-            helper.setText("Добрый день!\n\nВо вложении отчёт по заявкам с резолюцией 'НОК'. \n\nЭто автоматическая рассылка. Просьба не отвечать на письмо");
+            helper.setText("Добрый день!\n\nВо вложении отчёт по заявкам Директ с нарушениями. \n\nЭто автоматическая рассылка. Просьба не отвечать на письмо");
 
             // 4. Прикрепляем Excel-файл
             helper.addAttachment("report_NOK_" + LocalDate.now() + ".xlsx", 
